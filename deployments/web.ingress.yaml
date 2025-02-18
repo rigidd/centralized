@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-ingress
+  namespace: prd-centralized
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: prd-centralized-redirect@kubernetescrd
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  rules:
+  - host: centralized.rigidd.nicojqn.fr
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: web-service
+            port: 
+              number: 80
+  tls:
+  - hosts:
+    - centralized.rigidd.nicojqn.fr
+    secretName: centralized-web-tls
