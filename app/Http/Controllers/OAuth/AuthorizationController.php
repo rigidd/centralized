@@ -4,16 +4,15 @@ namespace App\Http\Controllers\OAuth;
 
 use App\Models\User as ModelsUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Laravel\Passport\Bridge\User;
 use Laravel\Passport\ClientRepository;
 use Laravel\Passport\Contracts\AuthorizationViewResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Http\Controllers\HandlesOAuthErrors;
 use Laravel\Passport\Passport;
-use Laravel\Passport\TokenRepository;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Nyholm\Psr7\Response as Psr7Response;
@@ -40,13 +39,11 @@ class AuthorizationController
     /**
      * Create a new controller instance.
      *
-     * @param  \League\OAuth2\Server\AuthorizationServer  $server
      * @param  \Illuminate\Contracts\Auth\StatefulGuard  $guard
-     * @param  \Laravel\Passport\Contracts\AuthorizationViewResponse  $response
      * @return void
      */
     public function __construct(AuthorizationServer $server,
-                                AuthorizationViewResponse $response)
+        AuthorizationViewResponse $response)
     {
         $this->server = $server;
         $this->response = $response;
@@ -55,15 +52,12 @@ class AuthorizationController
     /**
      * Authorize a client to access the user's account.
      *
-     * @param  \Psr\Http\Message\ServerRequestInterface  $psrRequest
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Laravel\Passport\ClientRepository  $clients
      * @param  \Laravel\Passport\TokenRepository  $tokens
      * @return \Illuminate\Http\Response|\Laravel\Passport\Contracts\AuthorizationViewResponse
      */
     public function authorize(ServerRequestInterface $psrRequest,
-                              Request $request,
-                              ClientRepository $clients)
+        Request $request,
+        ClientRepository $clients)
     {
         $authRequest = $this->withErrorHandling(function () use ($psrRequest) {
             return $this->server->validateAuthorizationRequest($psrRequest);
@@ -93,7 +87,7 @@ class AuthorizationController
         }
 
         if ($user->clients()->where('oauth_clients.id', $client->id)->doesntExist() && $user->role !== 'admin') {
-            return Inertia::render("OAuth/Unauthorized");
+            return Inertia::render('OAuth/Unauthorized');
         }
 
         $request->session()->put('authToken', $authToken = Str::random());
@@ -198,7 +192,6 @@ class AuthorizationController
     /**
      * Prompt the user to login by throwing an AuthenticationException.
      *
-     * @param  \Illuminate\Http\Request  $request
      *
      * @throws \Laravel\Passport\Exceptions\AuthenticationException
      */

@@ -29,12 +29,12 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse | HttpResponse
+    public function store(LoginRequest $request): RedirectResponse|HttpResponse
     {
         $request->authenticate();
-        
+
         $request->session()->regenerate();
-        
+
         if ($request->get('fromOauth')) {
             return Inertia::location(route('passport.authorizations.authorize', $request->query()));
         }

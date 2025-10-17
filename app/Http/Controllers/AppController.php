@@ -8,11 +8,11 @@ use App\Http\Resources\ClientResource;
 use App\Models\Client;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
-use Illuminate\Support\Str;
 
 class AppController extends Controller
 {
@@ -48,30 +48,33 @@ class AppController extends Controller
     public function edit(Client $client)
     {
         return Inertia::render('Apps/Edit', [
-            "client" => new ClientResource($client),
+            'client' => new ClientResource($client),
         ]);
     }
 
-    public function update(Client $client, UpdateAppRequest $request) {
+    public function update(Client $client, UpdateAppRequest $request)
+    {
         $client->update([
             'name' => $request->name,
             'picture' => $request->picture,
-            'redirect' => join(',', $request->validated('redirect_urls')),
+            'redirect' => implode(',', $request->validated('redirect_urls')),
         ]);
 
         return Redirect::route('apps.edit', $client->id);
     }
 
-    public function create() {
+    public function create()
+    {
         return Inertia::render('Apps/Create');
     }
 
-    public function store(StoreAppRequest $request) {
+    public function store(StoreAppRequest $request)
+    {
         $secret = Str::random(64);
         $client = Client::create([
             'name' => $request->validated('name'),
             'picture' => $request->picture,
-            'redirect' => join(',', $request->validated('redirect_urls')),
+            'redirect' => implode(',', $request->validated('redirect_urls')),
             'personal_access_client' => false,
             'password_client' => false,
             'revoked' => false,
@@ -79,12 +82,13 @@ class AppController extends Controller
         ]);
 
         return Inertia::render('Apps/InitHelp', [
-            "client" => new ClientResource($client),
+            'client' => new ClientResource($client),
             'secret' => $secret,
         ]);
     }
 
-    public function destroy(Client $client) {
+    public function destroy(Client $client)
+    {
         $client->delete();
 
         return Redirect::route('apps.index');

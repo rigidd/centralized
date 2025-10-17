@@ -52,13 +52,14 @@ class UserController extends Controller
     public function edit(User $user)
     {
         return Inertia::render('Users/Edit', [
-            "user" => new UserResource($user->load('clients')),
-            "roleEditable" => Auth::user()->id !== $user->id,
-            "clients" => Client::all(),
+            'user' => new UserResource($user->load('clients')),
+            'roleEditable' => Auth::user()->id !== $user->id,
+            'clients' => Client::all(),
         ]);
     }
 
-    public function update(User $user, UpdateUserRequest $request) {
+    public function update(User $user, UpdateUserRequest $request)
+    {
         $data = $request->validated();
 
         if (isset($data['password'])) {
@@ -83,11 +84,13 @@ class UserController extends Controller
         return Redirect::route('users.edit', $user->id);
     }
 
-    public function create() {
+    public function create()
+    {
         return Inertia::render('Users/Create');
     }
 
-    public function store(StoreUserRequest $request) {
+    public function store(StoreUserRequest $request)
+    {
         $data = $request->validated();
 
         $data['password'] = bcrypt($data['password']);
@@ -97,7 +100,8 @@ class UserController extends Controller
         return $this->edit($user);
     }
 
-    public function destroy(User $user) {
+    public function destroy(User $user)
+    {
         $user->delete();
 
         return Redirect::route('users.index');

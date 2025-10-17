@@ -18,7 +18,7 @@ return [
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
-    "registration" => env('AUTH_REGISTRATION', false),
+    'registration' => env('AUTH_REGISTRATION', false),
 
     /*
     |--------------------------------------------------------------------------

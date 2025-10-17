@@ -13,6 +13,7 @@ Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard');
     }
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => config('auth.registration'),
@@ -29,9 +30,9 @@ Route::prefix('/apps')->middleware(['auth', 'verified', UserAdminMiddleware::cla
     Route::put('{client}', [AppController::class, 'update'])
         ->name('apps.update');
     Route::get('create', [AppController::class, 'create'])
-    ->name('apps.create');
+        ->name('apps.create');
     Route::post('', [AppController::class, 'store'])
-    ->name('apps.store');
+        ->name('apps.store');
     Route::delete('{client}', [AppController::class, 'destroy'])
         ->name('apps.destroy');
 });
@@ -44,9 +45,9 @@ Route::prefix('/users')->middleware(['auth', 'verified', UserAdminMiddleware::cl
     Route::put('{user}', [UserController::class, 'update'])
         ->name('users.update');
     Route::get('create', [UserController::class, 'create'])
-    ->name('users.create');
+        ->name('users.create');
     Route::post('', [UserController::class, 'store'])
-    ->name('users.store');
+        ->name('users.store');
     Route::delete('{user}', [UserController::class, 'destroy'])
         ->name('users.destroy');
 });

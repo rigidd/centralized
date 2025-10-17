@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt($password),
             ]);
 
-            echo("Admin user created with email: $seed@email.com and password: $password\n");
+            echo "Admin user created with email: $seed@email.com and password: $password\n";
         }
     }
 }

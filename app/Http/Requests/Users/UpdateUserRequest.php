@@ -18,7 +18,8 @@ class UpdateUserRequest extends FormRequest
         ];
     }
 
-    public function messages(): array {
+    public function messages(): array
+    {
         return [
             'email.required' => 'Email is required.',
             'email.string' => 'Email must be a string.',
