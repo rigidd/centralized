@@ -47,28 +47,12 @@ class AccessTokenController
     public function issueToken(ServerRequestInterface $request)
     {
         return $this->withErrorHandling(function () use ($request) {
-            return $this->convertResponse(
+            $response = $this->convertResponse(
                 $this->server->respondToAccessTokenRequest($request, new Psr7Response)
             );
 
             $data = json_decode($response->getContent(), true);
-
-            $accessTokenId = $data['access_token'];
-            $token = $this->tokens->find($accessTokenId);
-            $user = $token ? $token->user : null;
-
-            if ($user) {
-                $payload = [
-                    'iss' => url('/'),
-                    'sub' => $user->id,
-                    'email' => $user->email ?? null,
-                    'iat' => time(),
-                    'exp' => time() + $data['expires_in'],
-                ];
-
-                $idToken = JWT::encode($payload, env('APP_KEY'), 'HS256');
-                $data['id_token'] = $idToken;
-            }
+            $data['id_token'] = $data['access_token'];
 
             return response()->json($data, $response->getStatusCode(), $response->headers->all());
         });
