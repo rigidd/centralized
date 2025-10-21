@@ -19,6 +19,8 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }
+
+        $this->app->register(\OpenIDConnect\Laravel\PassportServiceProvider::class);
     }
 
     /**
@@ -29,12 +31,6 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
         JsonResource::withoutWrapping();
         Passport::useClientModel(Client::class);
-        Passport::hashClientSecrets();
-        Passport::tokensCan([
-            'openid' => 'Get user information',
-            'profile' => 'Get user profile',
-            'name' => 'Get user name',
-            'email' => 'Get user email',
-        ]);
+        Passport::tokensCan(config('openid.passport.tokens_can'));
     }
 }

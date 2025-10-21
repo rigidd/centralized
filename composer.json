@@ -8,9 +8,10 @@
         "php": "^8.2",
         "dootix-developer/inertiajs-tables-laravel-query-builder": "^4.0",
         "inertiajs/inertia-laravel": "^1.0",
+        "jeremy379/laravel-openid-connect": "^3.0",
         "laravel/framework": "^11.9",
         "laravel/octane": "^2.5",
-        "laravel/passport": "^12.0",
+        "laravel/passport": "^13",
         "laravel/tinker": "^2.9",
         "spatie/laravel-query-builder": "^6.2",
         "tightenco/ziggy": "^2.0"
@@ -64,7 +65,8 @@
     "extra": {
         "laravel": {
             "dont-discover": [
-                "laravel/telescope"
+                "laravel/telescope",
+                "laravel/passport"
             ]
         }
     },

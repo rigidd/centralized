@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\OAuth;
 
 use App\Models\User as ModelsUser;
+use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -11,57 +12,36 @@ use Inertia\Inertia;
 use Laravel\Passport\Bridge\User;
 use Laravel\Passport\ClientRepository;
 use Laravel\Passport\Contracts\AuthorizationViewResponse;
+use Laravel\Passport\Http\Controllers\ConvertsPsrResponses;
 use Laravel\Passport\Http\Controllers\HandlesOAuthErrors;
 use Laravel\Passport\Passport;
 use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
+use League\OAuth2\Server\RequestTypes\AuthorizationRequestInterface;
 use Nyholm\Psr7\Response as Psr7Response;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthorizationController
 {
-    use HandlesOAuthErrors;
+    use ConvertsPsrResponses, HandlesOAuthErrors;
 
-    /**
-     * The authorization server.
-     *
-     * @var \League\OAuth2\Server\AuthorizationServer
-     */
-    protected $server;
+    public function __construct(
+        protected AuthorizationServer $server,
+        protected ClientRepository $clients,
+        ) {}
 
-    /**
-     * The authorization view response implementation.
-     *
-     * @var \Laravel\Passport\Contracts\AuthorizationViewResponse
-     */
-    protected $response;
-
-    /**
-     * Create a new controller instance.
-     *
-     * @param  \Illuminate\Contracts\Auth\StatefulGuard  $guard
-     * @return void
-     */
-    public function __construct(AuthorizationServer $server,
-        AuthorizationViewResponse $response)
-    {
-        $this->server = $server;
-        $this->response = $response;
-    }
-
-    /**
-     * Authorize a client to access the user's account.
-     *
-     * @param  \Laravel\Passport\TokenRepository  $tokens
-     * @return \Illuminate\Http\Response|\Laravel\Passport\Contracts\AuthorizationViewResponse
-     */
-    public function authorize(ServerRequestInterface $psrRequest,
+    public function authorize(
+        ServerRequestInterface $psrRequest,
         Request $request,
-        ClientRepository $clients)
+    )
     {
-        $authRequest = $this->withErrorHandling(function () use ($psrRequest) {
-            return $this->server->validateAuthorizationRequest($psrRequest);
-        });
+        $authRequest = $this->withErrorHandling(
+            fn (): AuthorizationRequestInterface => $this->server->validateAuthorizationRequest($psrRequest),
+            ($psrRequest->getQueryParams()['response_type'] ?? null) === 'token'
+        );
 
         if (Auth::guest()) {
             return $request->get('prompt') === 'none'
@@ -77,10 +57,12 @@ class AuthorizationController
             return $this->promptForLogin($request);
         }
 
-        $scopes = $this->parseScopes($authRequest);
         /** @var ModelsUser $user */
         $user = Auth::user();
-        $client = $clients->find($authRequest->getClient()->getIdentifier());
+        $authRequest->setUser(new User($user->getAuthIdentifier()));
+
+        $scopes = $this->parseScopes($authRequest);
+        $client = $this->clients->find($authRequest->getClient()->getIdentifier());
 
         if ($request->get('prompt') === 'none') {
             return $this->denyRequest($authRequest, $user);
@@ -103,64 +85,24 @@ class AuthorizationController
         ]);
     }
 
-    /**
-     * Transform the authorization requests's scopes into Scope instances.
-     *
-     * @param  \League\OAuth2\Server\RequestTypes\AuthorizationRequest  $authRequest
-     * @return array
-     */
-    protected function parseScopes($authRequest)
+    protected function parseScopes(AuthorizationRequestInterface $authRequest): array
     {
         return Passport::scopesFor(
-            collect($authRequest->getScopes())->map(function ($scope) {
-                return $scope->getIdentifier();
-            })->unique()->all()
+            collect($authRequest->getScopes())->map(
+                fn (ScopeEntityInterface $scope): string => $scope->getIdentifier()
+            )->unique()->all()
         );
     }
 
-    /**
-     * Determine if a valid token exists for the given user, client, and scopes.
-     *
-     * @param  \Laravel\Passport\TokenRepository  $tokens
-     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
-     * @param  \Laravel\Passport\Client  $client
-     * @param  array  $scopes
-     * @return bool
-     */
-    protected function hasValidToken($tokens, $user, $client, $scopes)
+    protected function approveRequest(AuthorizationRequestInterface $authRequest, ResponseInterface $psrResponse): Response
     {
-        $token = $tokens->findValidToken($user, $client);
-
-        return $token && $token->scopes === collect($scopes)->pluck('id')->all();
-    }
-
-    /**
-     * Approve the authorization request.
-     *
-     * @param  \League\OAuth2\Server\RequestTypes\AuthorizationRequest  $authRequest
-     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
-     * @return \Illuminate\Http\Response
-     */
-    protected function approveRequest($authRequest, $user)
-    {
-        $authRequest->setUser(new User($user->getAuthIdentifier()));
-
         $authRequest->setAuthorizationApproved(true);
 
-        return $this->withErrorHandling(function () use ($authRequest) {
-            return $this->convertResponse(
-                $this->server->completeAuthorizationRequest($authRequest, new Psr7Response)
-            );
-        });
+        return $this->withErrorHandling(fn () => $this->convertResponse(
+            $this->server->completeAuthorizationRequest($authRequest, $psrResponse)
+        ), $authRequest->getGrantTypeId() === 'implicit');
     }
 
-    /**
-     * Deny the authorization request.
-     *
-     * @param  \League\OAuth2\Server\RequestTypes\AuthorizationRequest  $authRequest
-     * @param  \Illuminate\Contracts\Auth\Authenticatable|null  $user
-     * @return \Illuminate\Http\Response
-     */
     protected function denyRequest($authRequest, $user = null)
     {
         if (is_null($user)) {
@@ -189,12 +131,6 @@ class AuthorizationController
         });
     }
 
-    /**
-     * Prompt the user to login by throwing an AuthenticationException.
-     *
-     *
-     * @throws \Laravel\Passport\Exceptions\AuthenticationException
-     */
     protected function promptForLogin(Request $request)
     {
         return Inertia::render('Auth/Login', [
