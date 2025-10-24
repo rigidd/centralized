@@ -59,6 +59,13 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Users
                                 </NavLink>
+                                <NavLink
+                                    v-if="isAdmin"
+                                    :href="route('groups.index')"
+                                    :active="route().current('groups.index')"
+                                >
+                                    Groups
+                                </NavLink>
                             </div>
                         </div>
 

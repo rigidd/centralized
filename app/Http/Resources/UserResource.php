@@ -16,6 +16,7 @@ class UserResource extends JsonResource
             'role' => $this->role,
             'active_client_sessions' => ClientResource::collection($this->whenLoaded('active_client_sessions')),
             'clients' => ClientResource::collection($this->whenLoaded('clients')),
+            'groups' => GroupResource::collection($this->whenLoaded('groups')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

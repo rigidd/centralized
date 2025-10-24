@@ -8,21 +8,31 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { ClientModel } from "@/models/ClientModel";
+import { GroupModel } from "@/models/GroupModel";
 import { useForm } from "@inertiajs/vue3";
 import { computed } from "vue";
 
 const props = defineProps<{
     user: any;
     roleEditable: boolean;
-    clients: any[];
+    clients: ClientModel[];
+    groups: GroupModel[];
 }>();
 
 const clientsDataList = computed(() =>
     props.clients.map((client) => client.name)
 );
 
+const groupsDataList = computed(() =>
+    props.groups.map((group) => group.name)
+);
+
 const userClients = computed(() =>
     props.user.clients.map((client: ClientModel) => client.name)
+);
+
+const userGroups = computed(() =>
+    props.user.groups.map((group: GroupModel) => group.name)
 );
 
 const form = useForm({
@@ -31,6 +41,7 @@ const form = useForm({
     password: "",
     role: props.user.role,
     clients: userClients.value,
+    groups: userGroups.value,
 });
 
 const deleteUser = () => {
@@ -170,6 +181,50 @@ const role = computed({
                 </div>
 
                 <InputError class="mt-2" :message="form.errors.clients" />
+            </div>
+
+            <div>
+                <InputLabel value="Groups" />
+
+                <div
+                    v-for="(group, index) in form.groups"
+                    :key="index"
+                    class="flex items-center gap-4 mt-3"
+                >
+                    <IconButton
+                        v-if="index === form.groups.length - 1"
+                        icon="plus"
+                        class="dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-white"
+                        :size="20"
+                        @click="form.groups.push('')"
+                    />
+                    <IconButton
+                        v-if="form.groups.length > 0"
+                        icon="minus"
+                        class="dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-white"
+                        :size="20"
+                        @click="form.groups.splice(index, 1)"
+                    />
+                    <DataList
+                        v-model="form.groups[index]"
+                        :options="groupsDataList"
+                        id="group"
+                    />
+                </div>
+
+                <div class="flex items-center gap-2 pt-2" v-if="form.groups.length === 0">
+                    <IconButton
+                        icon="plus"
+                        class="dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-white"
+                        :size="20"
+                        @click="form.groups.push('')"
+                    />
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        No groups assigned.
+                    </p>
+                </div>
+
+                <InputError class="mt-2" :message="form.errors.groups" />
             </div>
 
             <div class="flex items-center gap-4">

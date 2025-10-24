@@ -3,7 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import UpdateGeneralInformationForm from "./Partials/UpdateGeneralInformationForm.vue";
 import { Head } from "@inertiajs/vue3";
 
-defineProps(["user", "roleEditable", "clients"]);
+defineProps(["user", "roleEditable", "clients", "groups"]);
 </script>
 
 <template>
@@ -28,6 +28,7 @@ defineProps(["user", "roleEditable", "clients"]);
                         :role-editable="roleEditable"
                         class="max-w-xl"
                         :clients="clients"
+                        :groups="groups"
                     />
                 </div>
             </div>

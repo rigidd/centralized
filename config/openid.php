@@ -11,6 +11,7 @@ return [
             'openid' => 'Enable OpenID Connect',
             'profile' => 'Information about your profile',
             'email' => 'Information about your email address',
+            'groups' => 'Information about your groups',
         ],
     ],
 
@@ -18,15 +19,9 @@ return [
      * Place your custom claim sets here.
      */
     'custom_claim_sets' => [
-        // 'login' => [
-        //     'last-login',
-        // ],
-        // 'company' => [
-        //     'company_name',
-        //     'company_address',
-        //     'company_phone',
-        //     'company_email',
-        // ],
+        "groups" => [
+            'groups'
+        ]
     ],
 
     /**

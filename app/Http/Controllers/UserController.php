@@ -6,6 +6,7 @@ use App\Http\Requests\Users\StoreUserRequest;
 use App\Http\Requests\Users\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Client;
+use App\Models\Group;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -52,9 +53,10 @@ class UserController extends Controller
     public function edit(User $user)
     {
         return Inertia::render('Users/Edit', [
-            'user' => new UserResource($user->load('clients')),
+            'user' => new UserResource($user->load('clients', 'groups')),
             'roleEditable' => Auth::user()->id !== $user->id,
             'clients' => Client::all(),
+            'groups' => Group::all(),
         ]);
     }
 
@@ -75,10 +77,16 @@ class UserController extends Controller
         $user->update($data);
 
         $user->clients()->detach();
+        $user->groups()->detach();
 
         foreach ($data['clients'] as $client) {
             $client = Client::where('name', $client)->first();
             $user->clients()->syncWithoutDetaching($client);
+        }
+
+        foreach ($data['groups'] as $group) {
+            $group = Group::where('name', $group)->first();
+            $user->groups()->syncWithoutDetaching($group);
         }
 
         return Redirect::route('users.edit', $user->id);

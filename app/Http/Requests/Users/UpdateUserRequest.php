@@ -15,6 +15,7 @@ class UpdateUserRequest extends FormRequest
             'password' => ['sometimes', 'string', 'min:8', 'nullable'],
             'role' => ['sometimes', 'string', 'in:admin,user'],
             'clients' => ['sometimes', 'array', 'exists:oauth_clients,name'],
+            'groups' => ['sometimes', 'array', 'exists:groups,name'],
         ];
     }
 
@@ -33,6 +34,8 @@ class UpdateUserRequest extends FormRequest
             'role.in' => 'Role must be one of the following: admin, user.',
             'clients.array' => 'Clients must be an array.',
             'clients.exists' => 'Clients must exist.',
+            'groups.array' => 'Groups must be an array.',
+            'groups.exists' => 'Groups must exist.',
         ];
     }
 }

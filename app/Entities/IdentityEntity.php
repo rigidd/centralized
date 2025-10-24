@@ -15,6 +15,7 @@ class IdentityEntity implements IdentityEntityInterface
      * The user to collect the additional information for
      */
     protected User $user;
+    protected array $groups;
 
     /**
      * The identity repository creates this entity and provides the user id
@@ -24,6 +25,7 @@ class IdentityEntity implements IdentityEntityInterface
     {
         $this->identifier = strval($identifier);
         $this->user = User::findOrFail($identifier);
+        $this->groups = $this->user->groups()->pluck('name')->toArray();
     }
 
     /**
@@ -33,6 +35,7 @@ class IdentityEntity implements IdentityEntityInterface
     {
         return [
             'email' => $this->user->email,
+            'groups' => $this->groups,
         ];
     }
 }

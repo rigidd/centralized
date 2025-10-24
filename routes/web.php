@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\UserAdminMiddleware;
@@ -50,6 +51,21 @@ Route::prefix('/users')->middleware(['auth', 'verified', UserAdminMiddleware::cl
         ->name('users.store');
     Route::delete('{user}', [UserController::class, 'destroy'])
         ->name('users.destroy');
+});
+
+Route::prefix('/groups')->middleware(['auth', 'verified', UserAdminMiddleware::class])->group(function () {
+    Route::get('', [GroupController::class, 'index'])
+        ->name('groups.index');
+    Route::get('{group}/edit', [GroupController::class, 'edit'])
+        ->name('groups.edit');
+    Route::put('{group}', [GroupController::class, 'update'])
+        ->name('groups.update');
+    Route::get('create', [GroupController::class, 'create'])
+        ->name('groups.create');
+    Route::post('', [GroupController::class, 'store'])
+        ->name('groups.store');
+    Route::delete('{group}', [GroupController::class, 'destroy'])
+        ->name('groups.destroy');
 });
 
 Route::middleware('auth')->group(function () {
