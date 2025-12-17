@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import Separator from '@/components/ui/separator/Separator.vue';
+import Separator from '@/Components/ui/separator/Separator.vue';
 import { Fingerprint, Mail } from 'lucide-vue-next';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
