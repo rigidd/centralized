@@ -5,7 +5,8 @@ RUN apt-get update && apt-get install -y \
     zip \
     supervisor \
     cron \
-    telnet
+    telnet \
+    git
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
