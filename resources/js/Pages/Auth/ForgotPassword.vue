@@ -20,14 +20,8 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <GuestLayout heading="Forgot your password?" subheading="No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.">
         <Head title="Forgot Password" />
-
-        <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-            Forgot your password? No problem. Just let us know your email
-            address and we will email you a password reset link that will allow
-            you to choose a new one.
-        </div>
 
         <div
             v-if="status"

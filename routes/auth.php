@@ -1,9 +1,16 @@
 <?php
 
+use App\Http\Controllers\Auth\ActivateAccountController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\MFAChallenge\GetWebAuthnPublicKeyController;
+use App\Http\Controllers\Auth\MFAChallenge\SendPinCodeController;
+use App\Http\Controllers\Auth\MFAChallenge\VerifyPinCodeController;
+use App\Http\Controllers\Auth\MFAChallenge\VerifyWebAuthnKeyController;
+use App\Http\Controllers\Auth\MFAChallengeController;
+use App\Http\Controllers\Auth\MFASuggestionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -20,6 +27,7 @@ Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
+
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
@@ -33,9 +41,39 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    Route::get('activate-account/{token}', [ActivateAccountController::class, 'create'])
+        ->name('activate-account');
+
+    Route::post('activate-account', [ActivateAccountController::class, 'store'])
+        ->name('activate-account.store');
 });
 
-Route::middleware('auth')->group(function () {
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('login/mfa_challenge', [MFAChallengeController::class, 'show'])
+        ->name('login.mfa_challenge');
+
+    Route::prefix('mfa_challenge')->group(function () {
+        Route::prefix('pin_code')->group(function () {
+            Route::post('send', SendPinCodeController::class)
+                ->name('mfa_challenge.pin_code.send');
+            Route::post('verify', VerifyPinCodeController::class)
+                ->name('mfa_challenge.pin_code.verify');
+        });
+
+        Route::prefix('webauthn')->group(function () {
+            Route::post('get-public-key', GetWebAuthnPublicKeyController::class)
+                ->name('mfa_challenge.webauthn.get_public_key');
+            Route::post('verify', VerifyWebAuthnKeyController::class)
+                ->name('mfa_challenge.webauthn.verify');
+        });
+    });
+
+    Route::get('login/mfa_suggestion', MFASuggestionController::class)
+        ->name('login.mfa_suggestion');
+
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 

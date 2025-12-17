@@ -57,6 +57,7 @@ class AppController extends Controller
         $client->update([
             'name' => $request->name,
             'picture' => $request->picture,
+            'display' => $request->display,
             'redirect' => implode(',', $request->validated('redirect_urls')),
         ]);
 
@@ -79,6 +80,7 @@ class AppController extends Controller
             'password_client' => false,
             'revoked' => false,
             'secret' => $secret,
+            'display' => $request->display,
         ]);
 
         return Inertia::render('Apps/InitHelp', [

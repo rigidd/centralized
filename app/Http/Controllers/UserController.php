@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\User\StoreUserAction;
 use App\Http\Requests\Users\StoreUserRequest;
 use App\Http\Requests\Users\UpdateUserRequest;
 use App\Http\Resources\UserResource;
@@ -97,15 +98,13 @@ class UserController extends Controller
         return Inertia::render('Users/Create');
     }
 
-    public function store(StoreUserRequest $request)
+    public function store(StoreUserRequest $request, StoreUserAction $action)
     {
         $data = $request->validated();
 
-        $data['password'] = bcrypt($data['password']);
+        $user = $action->handle($data);
 
-        $user = User::create($data);
-
-        return $this->edit($user);
+        return Redirect::route('users.edit', $user->id);
     }
 
     public function destroy(User $user)

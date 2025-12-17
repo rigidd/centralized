@@ -85,19 +85,6 @@ const submit = () => {
                                 />
                             </div>
 
-                            <div>
-                                <InputLabel for="password" value="Password" />
-
-                                <TextInput
-                                    id="password"
-                                    type="password"
-                                    class="mt-1 block w-full"
-                                    v-model="form.password"
-                                />
-
-                                <InputError class="mt-2" :message="form.errors.password" />
-                            </div>
-
                             <div class="flex items-center gap-4">
                                 <PrimaryButton :disabled="form.processing">
                                     Create

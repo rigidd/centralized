@@ -34,9 +34,26 @@ services:
       - centralized-dbdata:/var/lib/mysql
       - ./docker/dev/sql:/docker-entrypoint-initdb.d:ro
 
+  mailpit:
+        image: axllent/mailpit
+        container_name: mailpit
+        restart: unless-stopped
+        networks:
+          - centralized-dev-back
+        volumes:
+            - mailpit-data:/data
+        ports:
+            - 8025:8025
+        environment:
+            MP_MAX_MESSAGES: 5000
+            MP_DATABASE: /data/mailpit.db
+            MP_SMTP_AUTH_ACCEPT_ANY: 1
+            MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
 networks:
   centralized-dev-back:
     driver: bridge
 
 volumes:
   centralized-dbdata:
+  mailpit-data:

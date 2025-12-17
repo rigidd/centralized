@@ -10,8 +10,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
   selector:
     matchLabels:
       app: web
@@ -20,6 +20,8 @@ spec:
       labels:
         app: web
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       restartPolicy: Always
       imagePullSecrets:
         - name: ghcr-auth

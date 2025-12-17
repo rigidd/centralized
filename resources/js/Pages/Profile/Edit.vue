@@ -4,10 +4,13 @@ import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
 import { Head } from '@inertiajs/vue3';
+import UpdateMFAForm from './Partials/UpdateMFAForm.vue';
+import { WebauthnKey } from '@/models/WebauthnKey';
 
 defineProps<{
     mustVerifyEmail?: boolean;
     status?: string;
+    webauthnKeys: WebauthnKey[];
 }>();
 </script>
 
@@ -39,6 +42,12 @@ defineProps<{
                     class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800"
                 >
                     <UpdatePasswordForm class="max-w-xl" />
+                </div>
+
+                <div
+                    class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800"
+                >
+                    <UpdateMFAForm :webauthn-keys="webauthnKeys" class="max-w-xl" />
                 </div>
 
                 <div

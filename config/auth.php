@@ -72,6 +72,11 @@ return [
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
+        'users' => [
+            'driver' => 'webauthn',
+            'model' => env('AUTH_MODEL', App\Models\User::class),
+        ],
+
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
@@ -104,6 +109,13 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+
+        'users_activation' => [
+            'provider' => 'users',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 10080,
+            'throttle' => 60,
+        ],
     ],
 
     /*
@@ -118,5 +130,7 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+
+    'require_mfa' => env('AUTH_REQUIRE_MFA', false),
 
 ];

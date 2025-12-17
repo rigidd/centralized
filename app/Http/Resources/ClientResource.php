@@ -15,6 +15,7 @@ class ClientResource extends JsonResource
             'picture' => $this->picture,
             'redirect_urls' => explode(',', $this->redirect),
             'secret' => $this->when($request->method() === 'POST', $this->secret),
+            'display' => $this->display,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

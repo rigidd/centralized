@@ -7,5 +7,6 @@ export interface UserModel extends IdAndTimestamp {
   email_verified_at: string;
   active_client_sessions: ClientModel[];
   clients: ClientModel[];
+  has_webauthn_enabled: boolean;
   role: string;
 }

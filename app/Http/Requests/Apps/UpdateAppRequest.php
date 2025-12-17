@@ -11,6 +11,7 @@ class UpdateAppRequest extends FormRequest
         return [
             'name' => ['sometimes', 'string'],
             'picture' => ['sometimes', 'nullable', 'url'],
+            'display' => ['sometimes', 'boolean'],
             'redirect_urls' => ['required', 'array', 'min:1'],
             'redirect_urls.*' => ['url'],
         ];

@@ -41,7 +41,7 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <GuestLayout heading="Welcome back!" subheading="To continue, please log in to your account.">
         <Head title="Log in" />
 
         <div v-if="loading" class="flex flex-col items-center gap-2 py-5">

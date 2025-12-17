@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-    <GuestLayout>
+    <GuestLayout heading="Welcome to Centralized" subheading="Please log in to continue.">
         <Head title="Home" />
         <nav v-if="canLogin" class="mx-3 flex flex-col">
             <Link

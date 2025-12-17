@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { ClientModel } from "@/models/ClientModel";
 import { Head, usePage } from "@inertiajs/vue3";
+import { computed } from "vue";
 
 const user = usePage().props.auth.user;
+
+
+const clients = computed(() => {
+    return user.clients.filter((client: ClientModel) => client.display);
+});
 </script>
 
 <template>
@@ -18,7 +25,7 @@ const user = usePage().props.auth.user;
         </template>
 
         <div class="py-12 flex justify-center gap-5">
-            <div v-for="client in user.clients" class="col-4">
+            <div v-for="client in clients" class="col-4">
                 <a :href="client.redirect_urls[0]" target="_blank">
                     <div
                         class="flex flex-col items-center justify-center px-8 py-4 gap-2 bg-white shadow-sm sm:rounded-lg dark:bg-gray-800 hover:shadow-lg transition-all duration-300"
@@ -32,7 +39,7 @@ const user = usePage().props.auth.user;
                     </div>
                 </a>
             </div>
-            <div v-if="user.clients.length === 0">
+            <div v-if="clients.length === 0">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     No Application found
                 </div>

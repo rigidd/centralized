@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Checkbox from "@/Components/Checkbox.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import IconButton from "@/Components/IconButton.vue";
 import InputError from "@/Components/InputError.vue";
@@ -17,6 +18,7 @@ const props = defineProps<{
 const form = useForm({
     name: props.client.name,
     picture: props.client.picture,
+    display: props.client.display,
     redirect_urls: props.client.redirect_urls,
 });
 
@@ -92,6 +94,17 @@ const deleteApp = () => {
                 />
 
                 <InputError class="mt-2" :message="form.errors.picture" />
+            </div>
+
+            <div>
+                <InputLabel value="Display" />
+
+                <Checkbox
+                    v-model:checked="form.display"
+                    name="display"
+                    class="mt-1"
+                    label="Display in the dashboard"
+                />
             </div>
 
             <div>

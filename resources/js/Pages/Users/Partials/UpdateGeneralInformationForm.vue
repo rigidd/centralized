@@ -135,6 +135,7 @@ const role = computed({
                     v-model:checked="role"
                     name="role"
                     value="admin"
+                    class="mt-1"
                     label="Administration rights"
                 />
             </div>

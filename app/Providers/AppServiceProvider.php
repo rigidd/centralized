@@ -7,6 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
+use LaravelWebauthn\Facades\Webauthn;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app->register(\OpenIDConnect\Laravel\PassportServiceProvider::class);
+
+        Webauthn::ignoreRoutes();
     }
 
     /**

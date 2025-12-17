@@ -15,6 +15,7 @@ const query = computed(() => {
 const form = useForm({
     name: "",
     picture: "",
+    display: true,
     redirect_urls: [""],
 });
 

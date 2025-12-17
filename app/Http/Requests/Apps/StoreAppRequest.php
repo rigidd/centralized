@@ -11,6 +11,7 @@ class StoreAppRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'picture' => ['sometimes', 'nullable', 'url'],
+            'display' => ['required', 'boolean'],
             'redirect_urls' => ['required', 'array', 'min:1'],
             'redirect_urls.*' => ['url'],
         ];

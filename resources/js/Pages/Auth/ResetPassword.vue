@@ -28,7 +28,7 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <GuestLayout heading="Reset your password" subheading="Please enter your new password below.">
         <Head title="Reset Password" />
 
         <form @submit.prevent="submit">
@@ -41,8 +41,7 @@ const submit = () => {
                     class="mt-1 block w-full"
                     v-model="form.email"
                     required
-                    autofocus
-                    autocomplete="username"
+                    disabled
                 />
 
                 <InputError class="mt-2" :message="form.errors.email" />
@@ -57,6 +56,7 @@ const submit = () => {
                     class="mt-1 block w-full"
                     v-model="form.password"
                     required
+                    autofocus
                     autocomplete="new-password"
                 />
 
