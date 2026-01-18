@@ -101,8 +101,8 @@ steps:
         ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:arm64
 
       - if [ "${DRONE_REPO_BRANCH}" = "main" ]; then
-          docker buildx imagetools create \
-            -t ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest \
-            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:amd64 \
+          docker buildx imagetools create
+            -t ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest
+            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:amd64
             ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:arm64
         fi
