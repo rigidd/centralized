@@ -1,0 +1,7 @@
+postgresql:
+  primary:
+    persistence:
+      size: {{ .Values.database.size | quote }}
+  auth:
+    username: centralized
+    database: centralized

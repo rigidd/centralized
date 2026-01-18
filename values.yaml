@@ -1,0 +1,121 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/rigidd/centralized
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: centralized.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: {}
+
+readinessProbe:
+  httpGet:
+    path: /up
+    port: 8000
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+database:
+  size: 8Gi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+app:
+  name: Centralized
+  debug: false
+  timezone: UTC
+  url: https://centralized.rigidd.app
+
+  auth:
+    requireMfa: true
+    registration: false
+
+  locale:
+    app: en
+    fallback: en
+    faker: en_US
+
+  maintenanceDriver: file
+
+  phpCliServerWorkers: 4
+  bcryptRounds: 12
+
+  log:
+    channel: stack
+    stack: single
+    deprecationsChannel: "null"
+    level: debug
+
+  session:
+    driver: database
+    lifetime: "120"
+    encrypt: "false"
+    path: "/"
+    domain: "null"
+
+  cache:
+    store: database
+    prefix: ""
+
+  memcached:
+    host: "127.0.0.1"
+
+  redis:
+    client: phpredis
+    host: "127.0.0.1"
+    password: "null"
+    port: "6379"
+
+  mail:
+    mailer: mailjet
+    fromAddress: centralized@rigidd.app
+    fromName: Centralized - Rigidd
+    mailjet:
+      apiKey: ""
+      apiSecret: ""
+
+  aws:
+    accessKeyId: ""
+    secretAccessKey: ""
+    defaultRegion: us-east-1
+    bucket: ""
+    usePathStyleEndpoint: "false"

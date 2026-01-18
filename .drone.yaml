@@ -1,0 +1,28 @@
+kind: pipeline
+type: docker
+name: build-and-push
+
+trigger:
+  event:
+    - push
+
+
+steps:
+  - name: build
+    image: plugins/docker
+    settings:
+      repo: ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}
+      tags: |
+        latest
+        ${DRONE_COMMIT_SHA}
+      dockerfile: ./docker/prod/Dockerfile
+      path: .
+      build_args:
+        - "BUILDKIT_INLINE_CACHE=1"
+      buildx: true
+      platforms: linux/amd64,linux/arm64
+      registry: ghcr.io
+      username:
+        from_secret: GITHUB_USERNAME
+      password:
+        from_secret: GITHUB_TOKEN

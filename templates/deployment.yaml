@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "centralized.fullname" . }}
+  labels:
+    {{- include "centralized.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      {{- include "centralized.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "centralized.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          {{- with .Values.readinessProbe }}
+          env:
+          - name: APP_ENV
+            value: production
+          - name: APP_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "centralized.fullname" . }}-app-key
+                key: APP_KEY
+          - name: DB_CONNECTION
+            value: pgsql
+          - name: DB_HOST
+            value: "{{ .Release.Name }}-postgresql"
+          - name: DB_PORT
+            value: "5432"
+          - name: DB_DATABASE
+            value: centralized
+          - name: DB_USERNAME
+            value: centralized
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ printf "%s-postgresql" .Release.Name }}
+                key: postgresql-password
+          envFrom:
+          - secretRef:
+              name: {{ include "centralized.fullname" . }}--app-config
+          readinessProbe:
+            httpGet:
+              path: /up
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,12 @@
+apiVersion: v2
+name: centralized
+description: Helm for installing Centralized
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+dependencies:
+  - name: postgresql
+    version: 17.0.1
+    repository: https://charts.bitnami.com/bitnami
+    alias: postgresql

@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "app": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "default": "Centralized" },
+        "debug": { "type": "boolean", "default": false },
+        "timezone": { "type": "string", "default": "UTC" },
+        "url": { "type": "string", "default": "https://centralized.rigidd.app" },
+
+        "auth": {
+          "type": "object",
+          "properties": {
+            "requireMfa": { "type": "boolean", "default": true },
+            "registration": { "type": "boolean", "default": false }
+          },
+          "required": []
+        },
+
+        "locale": {
+          "type": "object",
+          "properties": {
+            "app": { "type": "string", "default": "en" },
+            "fallback": { "type": "string", "default": "en" },
+            "faker": { "type": "string", "default": "en_US" }
+          },
+          "required": []
+        },
+
+        "maintenanceDriver": { "type": "string", "default": "file" },
+        "phpCliServerWorkers": { "type": "integer", "default": 4 },
+        "bcryptRounds": { "type": "integer", "default": 12 },
+
+        "log": {
+          "type": "object",
+          "properties": {
+            "channel": { "type": "string", "default": "stack" },
+            "stack": { "type": "string", "default": "single" },
+            "deprecationsChannel": { "type": "string", "default": "null" },
+            "level": { "type": "string", "default": "debug" }
+          },
+          "required": []
+        },
+
+        "session": {
+          "type": "object",
+          "properties": {
+            "driver": { "type": "string", "default": "database" },
+            "lifetime": { "type": "string", "default": "120" },
+            "encrypt": { "type": "string", "default": "false" },
+            "path": { "type": "string", "default": "/" },
+            "domain": { "type": "string", "default": "null" }
+          },
+          "required": []
+        },
+
+        "cache": {
+          "type": "object",
+          "properties": {
+            "store": { "type": "string", "default": "database" },
+            "prefix": { "type": "string", "default": "" }
+          },
+          "required": []
+        },
+
+        "memcached": {
+          "type": "object",
+          "properties": {
+            "host": { "type": "string", "default": "127.0.0.1" }
+          },
+          "required": []
+        },
+
+        "redis": {
+          "type": "object",
+          "properties": {
+            "client": { "type": "string", "default": "phpredis" },
+            "host": { "type": "string", "default": "127.0.0.1" },
+            "password": { "type": "string", "default": "null" },
+            "port": { "type": "string", "default": "6379" }
+          },
+          "required": []
+        },
+
+        "mail": {
+          "type": "object",
+          "properties": {
+            "mailer": { "type": "string", "default": "mailjet" },
+            "fromAddress": { "type": "string", "default": "centralized@rigidd.app" },
+            "fromName": { "type": "string", "default": "Centralized - Rigidd" },
+            "mailjet": {
+              "type": "object",
+              "properties": {
+                "publicKey": { "type": "string", "default": "" },
+                "privateKey": { "type": "string", "default": "" }
+              },
+              "required": ["publicKey", "privateKey"]
+            }
+          },
+          "required": ["mailer", "fromAddress", "fromName"]
+        },
+
+        "aws": {
+          "type": "object",
+          "properties": {
+            "accessKeyId": { "type": "string", "default": "" },
+            "secretAccessKey": { "type": "string", "default": "" },
+            "defaultRegion": { "type": "string", "default": "us-east-1" },
+            "bucket": { "type": "string", "default": "" },
+            "usePathStyleEndpoint": { "type": "string", "default": "false" }
+          },
+          "required": []
+        }
+      },
+      "required": [
+        "name",
+        "url"
+      ]
+    }
+  },
+  "required": ["app"]
+}
