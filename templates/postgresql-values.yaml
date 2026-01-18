@@ -1,9 +1,0 @@
-metadata:
-  name: {{ printf "%s-postgresql" .Release.Name }}
-postgresql:
-  primary:
-    persistence:
-      size: {{ .Values.database.size | quote }}
-  auth:
-    username: centralized
-    database: centralized

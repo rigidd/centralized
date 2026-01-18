@@ -120,3 +120,14 @@ app:
     defaultRegion: us-east-1
     bucket: ""
     usePathStyleEndpoint: "false"
+
+
+postgresql:
+  enabled: true
+  auth:
+    username: "centralized"
+    database: "centralized"
+  primary:
+    persistence:
+      enabled: true
+      size: "{{ .Values.database.size }}"
