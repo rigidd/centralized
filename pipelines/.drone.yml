@@ -48,7 +48,6 @@ steps:
         git add $CHART_PATH
         git commit -m "chore: bump chart version to $VERSION [CI SKIP]" || echo "No changes to commit"
         git push origin HEAD:main
-      - git clone https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/${DRONE_REPO_OWNER}/helm-charts.git /tmp/helm-charts
 
   - name: push-chart
     image: alpine/git:latest
@@ -63,6 +62,7 @@ steps:
       - git config --global user.name "Drone Rigidd"
       - git config --global credential.helper store
       - echo "https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com" > ~/.git-credentials
+      - git clone https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/${DRONE_REPO_OWNER}/helm-charts.git /tmp/helm-charts
       - |
         VERSION=${DRONE_TAG#v}
         helm dependency update
