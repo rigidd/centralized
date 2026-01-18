@@ -63,6 +63,10 @@ spec:
               secretKeyRef:
                 name: {{ printf "%s-postgresql" .Release.Name }}
                 key: postgresql-password
+          {{- range $key, $value := .Values.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
           envFrom:
           - secretRef:
               name: {{ include "centralized.fullname" . }}--app-config

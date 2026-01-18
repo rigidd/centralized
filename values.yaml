@@ -57,66 +57,12 @@ tolerations: []
 
 affinity: {}
 
-app:
-  name: Centralized
-  debug: false
-  timezone: UTC
-  url: https://centralized.rigidd.app
+existingSecret:
+  enabled: false
+  name: ""
+  namespace: ""
 
-  auth:
-    requireMfa: true
-    registration: false
-
-  locale:
-    app: en
-    fallback: en
-    faker: en_US
-
-  maintenanceDriver: file
-
-  phpCliServerWorkers: 4
-  bcryptRounds: 12
-
-  log:
-    channel: stack
-    stack: single
-    deprecationsChannel: "null"
-    level: debug
-
-  session:
-    driver: database
-    lifetime: "120"
-    encrypt: "false"
-    path: "/"
-    domain: "null"
-
-  cache:
-    store: database
-    prefix: ""
-
-  memcached:
-    host: "127.0.0.1"
-
-  redis:
-    client: phpredis
-    host: "127.0.0.1"
-    password: "null"
-    port: "6379"
-
-  mail:
-    mailer: mailjet
-    fromAddress: centralized@rigidd.app
-    fromName: Centralized - Rigidd
-    mailjet:
-      apiKey: ""
-      apiSecret: ""
-
-  aws:
-    accessKeyId: ""
-    secretAccessKey: ""
-    defaultRegion: us-east-1
-    bucket: ""
-    usePathStyleEndpoint: "false"
+env:
 
 
 postgresql:
