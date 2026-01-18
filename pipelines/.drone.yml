@@ -155,7 +155,7 @@ name: tag-release
 
 trigger:
   event:
-    - tag
+    - push
 
 platform:
   os: linux
