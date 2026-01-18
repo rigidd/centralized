@@ -18,9 +18,7 @@ steps:
     image: plugins/docker
     settings:
       repo: ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}
-      tags: |
-        latest
-        ${DRONE_COMMIT_SHA}
+      tags: latest
       dockerfile: ./docker/prod/Dockerfile
       context: .
       build_args:
