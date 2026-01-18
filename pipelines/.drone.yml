@@ -155,10 +155,19 @@ steps:
         CHART_PATH="Chart.yaml"
         VERSION=${DRONE_TAG#v}
         echo "Updating Chart.yaml with version: $VERSION"
-        yq eval ".appVersion = \"$VERSION\"" -i $CHART_PATH
+        yq eval '.appVersion = "'$VERSION'"' -i $CHART_PATH
         git add $CHART_PATH
         git commit -m "chore: bump chart version to $VERSION [CI SKIP]"
         git push origin HEAD:main
+      - git clone https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/${DRONE_REPO_OWNER}/helm-charts.git /tmp/helm-charts
+      - |
+        VERSION=${DRONE_TAG#v}
+        helm package . --destination /tmp/helm-charts
+        cd /tmp/helm-charts
+        helm repo index . --url https://${DRONE_REPO_OWNER}.github.io/helm-charts
+        git add .
+        git commit -m "chore: publish ${DRONE_REPO_NAME} chart version $VERSION"
+        git push origin main
 
 ---
 kind: pipeline
@@ -176,7 +185,7 @@ platform:
   arch: amd64
 
 steps:
-  - name: deploy-to-rigidd
+  - name: rollout-restart-rigidd
     image: curlimages/curl:8.18.0
     environment:
       ARGOCD_SERVER:
@@ -195,12 +204,6 @@ steps:
           -H "Authorization: Bearer $ARGOCD_TOKEN" \
           -H "Content-Type: application/json" \
           -k \
-          "https://$ARGOCD_SERVER/api/v1/applications/$APP_NAME/resource/actions" \
-          -d '{
-            "namespace": "'"$NAMESPACE"'",
-            "resourceName": "'"$DEPLOYMENT_NAME"'",
-            "kind": "Deployment",
-            "group": "apps",
-            "version": "v1",
-            "action": "restart"
-          }'
+          "https://$ARGOCD_SERVER/api/v1/applications/$APP_NAME/resource/actions?namespace=$NAMESPACE&resourceName=$DEPLOYMENT_NAME&kind=Deployment&group=apps&version=v1" \
+          -d '{"action":"restart"}' \
+          -w "\nHTTP Status: %{http_code}\n"
