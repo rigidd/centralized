@@ -1,71 +1,71 @@
-# kind: pipeline
-# type: docker
-# name: build-amd64
+kind: pipeline
+type: docker
+name: build-amd64
 
-# trigger:
-#   event:
-#     - push
-#     - custom
-#   branch:
-#     - main
+trigger:
+  event:
+    - push
+    - custom
+  branch:
+    - main
 
-# platform:
-#   os: linux
-#   arch: amd64
+platform:
+  os: linux
+  arch: amd64
 
-# steps:
-#   - name: build
-#     image: plugins/docker
-#     settings:
-#       repo: ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}
-#       tags:
-#         - ${DRONE_REPO_BRANCH}-amd64
-#       dockerfile: ./docker/prod/Dockerfile
-#       context: .
-#       build_args:
-#         - "BUILDKIT_INLINE_CACHE=1"
-#       buildx: false
-#       registry: ghcr.io
-#       username:
-#         from_secret: GITHUB_USERNAME
-#       password:
-#         from_secret: GITHUB_TOKEN
+steps:
+  - name: build
+    image: plugins/docker
+    settings:
+      repo: ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}
+      tags:
+        - ${DRONE_REPO_BRANCH}-amd64
+      dockerfile: ./docker/prod/Dockerfile
+      context: .
+      build_args:
+        - "BUILDKIT_INLINE_CACHE=1"
+      buildx: false
+      registry: ghcr.io
+      username:
+        from_secret: GITHUB_USERNAME
+      password:
+        from_secret: GITHUB_TOKEN
 
-# ---
-# kind: pipeline
-# type: docker
-# name: build-arm64
+---
+kind: pipeline
+type: docker
+name: build-arm64
 
-# trigger:
-#   event:
-#     - push
-#     - custom
-#   branch:
-#     - main
+trigger:
+  event:
+    - push
+    - custom
+  branch:
+    - main
 
-# platform:
-#   os: linux
-#   arch: arm64
+platform:
+  os: linux
+  arch: arm64
 
-# steps:
-#   - name: build
-#     image: plugins/docker
-#     settings:
-#       repo: ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}
-#       tags:
-#         - ${DRONE_REPO_BRANCH}-arm64
-#       dockerfile: ./docker/prod/Dockerfile
-#       context: .
-#       build_args:
-#         - "BUILDKIT_INLINE_CACHE=1"
-#       buildx: false
-#       registry: ghcr.io
-#       username:
-#         from_secret: GITHUB_USERNAME
-#       password:
-#         from_secret: GITHUB_TOKEN
+steps:
+  - name: build
+    image: plugins/docker
+    settings:
+      repo: ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}
+      tags:
+        - ${DRONE_REPO_BRANCH}-arm64
+      dockerfile: ./docker/prod/Dockerfile
+      context: .
+      build_args:
+        - "BUILDKIT_INLINE_CACHE=1"
+      buildx: false
+      registry: ghcr.io
+      username:
+        from_secret: GITHUB_USERNAME
+      password:
+        from_secret: GITHUB_TOKEN
 
-# ---
+---
 kind: pipeline
 type: docker
 name: manifest
@@ -81,9 +81,9 @@ platform:
   os: linux
   arch: arm64
 
-# depends_on:
-#   - build-amd64
-#   - build-arm64
+depends_on:
+  - build-amd64
+  - build-arm64
 
 steps:
   - name: manifest
@@ -97,12 +97,12 @@ steps:
       - echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_USERNAME" --password-stdin
       - docker buildx imagetools create
         --tag ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}
-        ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:amd64
-        ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:arm64
+        ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_NAME}-amd64
+        ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_NAME}-arm64
 
       - if [ "${DRONE_REPO_BRANCH}" = "main" ]; then
           docker buildx imagetools create
             -t ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest
-            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:amd64
-            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:arm64;
+            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_NAME}-amd64
+            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_NAME}-arm64;
         fi
