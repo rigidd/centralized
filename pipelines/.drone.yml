@@ -68,7 +68,7 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: manifest
+name: merge-images
 
 trigger:
   event:
@@ -97,12 +97,12 @@ steps:
       - echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_USERNAME" --password-stdin
       - docker buildx imagetools create
         --tag ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}
-        ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_NAME}-amd64
-        ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_NAME}-arm64
+        ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-amd64
+        ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-arm64
 
       - if [ "${DRONE_REPO_BRANCH}" = "main" ]; then
           docker buildx imagetools create
             -t ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest
-            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_NAME}-amd64
-            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_NAME}-arm64;
+            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-amd64
+            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-arm64;
         fi
