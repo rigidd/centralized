@@ -68,7 +68,7 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: merge-images
+name: merge-deploy
 
 trigger:
   event:
@@ -86,7 +86,7 @@ depends_on:
   - build-arm64
 
 steps:
-  - name: manifest
+  - name: merge-images
     image: docker:24.0.5
     environment:
       GITHUB_USERNAME:
@@ -106,3 +106,48 @@ steps:
             ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-amd64
             ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-arm64;
         fi
+
+---
+kind: pipeline
+type: docker
+name: deploy
+
+trigger:
+  event:
+    - promote
+  target:
+    - production
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: deploy-to-rigidd
+    image: curlimages/curl:8.18.0
+    environment:
+      ARGOCD_SERVER:
+        from_secret: ARGOCD_SERVER
+      ARGOCD_TOKEN:
+        from_secret: ARGOCD_TOKEN
+      APP_NAME:
+        from_secret: ARGOCD_APP_NAME
+      NAMESPACE:
+        from_secret: ARGOCD_APP_NAMESPACE
+      DEPLOYMENT_NAME:
+        from_secret: ARGOCD_APP_DEPLOYMENT_NAME
+    commands:
+      - |
+        curl -X POST \
+          -H "Authorization: Bearer $ARGOCD_TOKEN" \
+          -H "Content-Type: application/json" \
+          -k \
+          "https://$ARGOCD_SERVER/api/v1/applications/$APP_NAME/resource/actions" \
+          -d '{
+            "namespace": "'"$NAMESPACE"'",
+            "resourceName": "'"$DEPLOYMENT_NAME"'",
+            "kind": "Deployment",
+            "group": "apps",
+            "version": "v1",
+            "action": "restart"
+          }'
