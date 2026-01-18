@@ -1,5 +1,6 @@
-kind: template
-load: build-docker.drone.yml
+kind: pipeline
+type: docker
+name: build-amd64
 
 trigger:
   event:
@@ -8,12 +9,32 @@ trigger:
   branch:
     - main
 
-data:
+platform:
+  os: linux
   arch: amd64
+
+steps:
+  - name: build
+    image: plugins/docker
+    settings:
+      repo: ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}
+      tags:
+        - amd64
+      dockerfile: ./docker/prod/Dockerfile
+      context: .
+      build_args:
+        - "BUILDKIT_INLINE_CACHE=1"
+      buildx: false
+      registry: ghcr.io
+      username:
+        from_secret: GITHUB_USERNAME
+      password:
+        from_secret: GITHUB_TOKEN
 
 ---
 kind: pipeline
-load: build-docker.yml
+type: docker
+name: build-arm64
 
 trigger:
   event:
@@ -22,8 +43,27 @@ trigger:
   branch:
     - main
 
-data:
+platform:
+  os: linux
   arch: arm64
+
+steps:
+  - name: build
+    image: plugins/docker
+    settings:
+      repo: ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}
+      tags:
+        - arm64
+      dockerfile: ./docker/prod/Dockerfile
+      context: .
+      build_args:
+        - "BUILDKIT_INLINE_CACHE=1"
+      buildx: false
+      registry: ghcr.io
+      username:
+        from_secret: GITHUB_USERNAME
+      password:
+        from_secret: GITHUB_TOKEN
 
 ---
 kind: pipeline
