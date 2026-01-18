@@ -52,7 +52,7 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 database:
-  size: 8Gi
+  size: "8Gi"
 
 nodeSelector: {}
 
