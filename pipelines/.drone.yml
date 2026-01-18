@@ -94,10 +94,9 @@ steps:
       GITHUB_TOKEN:
         from_secret: GITHUB_TOKEN
     commands:
-      - docker login ghcr.io -u "$GITHUB_USERNAME" -p "$GITHUB_TOKEN"
+      - echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_USERNAME" --password-stdin
       - docker buildx imagetools create \
-            -t ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH} \
-            -t ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH} \
+            --tag ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH} \
             ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:amd64 \
             ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:arm64
 
