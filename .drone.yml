@@ -5,6 +5,7 @@ name: build-and-push
 trigger:
   event:
     - push
+    - custom
   branch:
     - main
 
