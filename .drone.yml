@@ -5,6 +5,8 @@ name: build-and-push
 trigger:
   event:
     - push
+  branch:
+    - main
 
 
 steps:
