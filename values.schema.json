@@ -5,7 +5,7 @@
     "app": {
       "type": "object",
       "properties": {
-        "name": { "type": "string", "default": "Centralized" },
+        "name": { "type": "string", "default": "Centralized", "pattern": "[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*" },
         "debug": { "type": "boolean", "default": false },
         "timezone": { "type": "string", "default": "UTC" },
         "url": { "type": "string", "default": "https://centralized.rigidd.app" },
@@ -96,7 +96,7 @@
                 "publicKey": { "type": "string", "default": "" },
                 "privateKey": { "type": "string", "default": "" }
               },
-              "required": ["publicKey", "privateKey"]
+              "required": []
             }
           },
           "required": ["mailer", "fromAddress", "fromName"]

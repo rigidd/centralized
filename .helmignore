@@ -21,3 +21,16 @@
 .idea/
 *.tmproj
 .vscode/
+
+app/
+bootstrap/
+config/
+database/
+docker/
+node_modules/
+public/
+resources/
+routes/
+storage/
+tests/
+vendor/

@@ -1,3 +1,5 @@
+metadata:
+  name: {{ printf "%s-postgresql" .Release.Name }}
 postgresql:
   primary:
     persistence:
