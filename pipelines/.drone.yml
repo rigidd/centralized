@@ -53,6 +53,7 @@ steps:
         VERSION=${DRONE_TAG#v}
         helm package . --destination /tmp/helm-charts
         cd /tmp/helm-charts
+        helm dependency update
         helm repo index . --url https://${DRONE_REPO_OWNER}.github.io/helm-charts
         git add .
         git commit -m "chore: publish ${DRONE_REPO_NAME} chart version $VERSION"
