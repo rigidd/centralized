@@ -19,7 +19,7 @@
 #     settings:
 #       repo: ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}
 #       tags:
-#         - amd64
+#         - ${DRONE_REPO_BRANCH}-amd64
 #       dockerfile: ./docker/prod/Dockerfile
 #       context: .
 #       build_args:
@@ -53,7 +53,7 @@
 #     settings:
 #       repo: ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}
 #       tags:
-#         - arm64
+#         - ${DRONE_REPO_BRANCH}-arm64
 #       dockerfile: ./docker/prod/Dockerfile
 #       context: .
 #       build_args:
@@ -95,11 +95,15 @@ steps:
         from_secret: GITHUB_TOKEN
     commands:
       - docker login ghcr.io -u "$GITHUB_USERNAME" -p "$GITHUB_TOKEN"
-      - docker manifest create ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH} \
-          ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:amd64 \
-          ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:arm64
-      - docker manifest annotate ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH} \
-          ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:amd64 --os linux --arch amd64
-      - docker manifest annotate ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH} \
-          ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:arm64 --os linux --arch arm64
-      - docker manifest push ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}
+      - docker buildx imagetools create \
+            -t ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH} \
+            -t ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH} \
+            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:amd64 \
+            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:arm64
+
+      - if [ "${DRONE_REPO_BRANCH}" = "main" ]; then
+          docker buildx imagetools create \
+            -t ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest \
+            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:amd64 \
+            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:arm64
+        fi
