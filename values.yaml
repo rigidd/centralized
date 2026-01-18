@@ -51,9 +51,6 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-database:
-  size: "8Gi"
-
 nodeSelector: {}
 
 tolerations: []
@@ -130,4 +127,4 @@ postgresql:
   primary:
     persistence:
       enabled: true
-      size: "{{ .Values.database.size }}"
+      size: "8Gi"
