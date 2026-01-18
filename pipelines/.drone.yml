@@ -46,7 +46,7 @@ steps:
         echo "Updating Chart.yaml with version: $VERSION"
         yq eval '.appVersion = "'$VERSION'"' -i $CHART_PATH
         git add $CHART_PATH
-        git commit -m "chore: bump chart version to $VERSION [CI SKIP]"
+        git commit -m "chore: bump chart version to $VERSION [CI SKIP]" || echo "No changes to commit"
         git push origin HEAD:main
       - git clone https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/${DRONE_REPO_OWNER}/helm-charts.git /tmp/helm-charts
       - |
