@@ -95,20 +95,20 @@ steps:
         from_secret: GITHUB_TOKEN
     commands:
       - echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_USERNAME" --password-stdin
-      - docker buildx imagetools create
-        --tag ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}
-        ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-amd64
-        ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-arm64
-
-      - if [ "${DRONE_REPO_BRANCH}" = "main" ]; then
-          docker buildx imagetools create
-            -t ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest
-            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-amd64
-            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-arm64;
+      - |
+        docker buildx imagetools create \
+          --tag ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH} \
+          ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-amd64 \
+          ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-arm64
+      - |
+        if [ "${DRONE_REPO_BRANCH}" = "main" ]; then
+          docker buildx imagetools create \
+            -t ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest \
+            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-amd64 \
+            ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH}-arm64
         fi
 
 ---
-
 kind: pipeline
 type: docker
 name: tag-release
@@ -131,43 +131,36 @@ steps:
         from_secret: GITHUB_TOKEN
     commands:
       - echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_USERNAME" --password-stdin
-
-      - docker buildx imagetools create
-        --tag ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_TAG}
-        ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest
+      - |
+        docker buildx imagetools create \
+          --tag ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_TAG} \
+          ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:latest
   
   - name: update-chart-version
     image: alpine/git:latest
     environment:
       GITHUB_TOKEN:
-        from_secret: github_token
+        from_secret: GITHUB_TOKEN
       GITHUB_USERNAME:
-        from_secret: github_username
+        from_secret: GITHUB_USERNAME
     commands:
       - apk add --no-cache wget
       - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
       - chmod +x /usr/local/bin/yq
-      
       - git config --global user.email "drone@ci.rigidd.app"
       - git config --global user.name "Drone Rigidd"
       - git config --global credential.helper store
-      - echo "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
-
+      - echo "https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com" > ~/.git-credentials
       - |
         CHART_PATH="Chart.yaml"
-        
         VERSION=${DRONE_TAG#v}
-        
         echo "Updating Chart.yaml with version: $VERSION"
-        
         yq eval ".appVersion = \"$VERSION\"" -i $CHART_PATH
-        
         git add $CHART_PATH
         git commit -m "chore: bump chart version to $VERSION [CI SKIP]"
         git push origin HEAD:main
 
 ---
-
 kind: pipeline
 type: docker
 name: deploy
@@ -198,11 +191,11 @@ steps:
         from_secret: ARGOCD_APP_DEPLOYMENT_NAME
     commands:
       - |
-        curl -X POST
-          -H "Authorization: Bearer $ARGOCD_TOKEN"
-          -H "Content-Type: application/json"
-          -k
-          "https://$ARGOCD_SERVER/api/v1/applications/$APP_NAME/resource/actions"
+        curl -X POST \
+          -H "Authorization: Bearer $ARGOCD_TOKEN" \
+          -H "Content-Type: application/json" \
+          -k \
+          "https://$ARGOCD_SERVER/api/v1/applications/$APP_NAME/resource/actions" \
           -d '{
             "namespace": "'"$NAMESPACE"'",
             "resourceName": "'"$DEPLOYMENT_NAME"'",
