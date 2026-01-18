@@ -11,8 +11,21 @@ trigger:
 
 
 steps:
-- name: greeting
-  image: alpine
-  commands:
-  - echo hello
-  - echo world
+  - name: build
+    image: plugins/docker
+    settings:
+      repo: ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}
+      tags: |
+        latest
+        ${DRONE_COMMIT_SHA}
+      dockerfile: ./docker/prod/Dockerfile
+      context: .
+      build_args:
+        - "BUILDKIT_INLINE_CACHE=1"
+      buildx: true
+      platforms: linux/amd64,linux/arm64
+      registry: ghcr.io
+      username:
+        from_secret: GITHUB_USERNAME
+      password:
+        from_secret: GITHUB_TOKEN
