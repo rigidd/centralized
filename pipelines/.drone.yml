@@ -51,11 +51,11 @@ steps:
       - git clone https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/${DRONE_REPO_OWNER}/helm-charts.git /tmp/helm-charts
       - |
         VERSION=${DRONE_TAG#v}
+        helm dependency update
         helm package . --destination /tmp/helm-charts
         cd /tmp/helm-charts
-        helm dependency update
         helm repo index . --url https://${DRONE_REPO_OWNER}.github.io/helm-charts
         git add .
-        git commit -m "chore: publish ${DRONE_REPO_NAME} chart version $VERSION"
+        git commit -m "chore: publish ${DRONE_REPO_NAME} chart version $VERSION" || echo "No changes to commit"
         git push origin main
 
