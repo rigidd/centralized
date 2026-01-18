@@ -81,12 +81,13 @@ platform:
   os: linux
   arch: arm64
 
+depends_on:
+  - build-amd64
+  - build-arm64
+
 steps:
   - name: manifest
     image: docker:24.0.5
-    depends_on:
-      - build-amd64
-      - build-arm64
     commands:
       - docker login ghcr.io -u "${GITHUB_USERNAME}" -p "${GITHUB_TOKEN}"
       - docker manifest create ghcr.io/${DRONE_REPO_OWNER}/${DRONE_REPO_NAME}:${DRONE_REPO_BRANCH} \
