@@ -69,7 +69,7 @@ spec:
           {{- end }}
           envFrom:
           - secretRef:
-              name: {{ include "centralized.fullname" . }}--app-config
+              name: {{ include "centralized.fullname" . }}-app-config
           readinessProbe:
             httpGet:
               path: /up
