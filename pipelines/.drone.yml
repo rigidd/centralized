@@ -139,14 +139,11 @@ steps:
       DEPLOYMENT_NAME:
         from_secret: ARGOCD_APP_DEPLOYMENT_NAME
     commands:
+      - sh
+      - -c
       - |
-        curl -X POST \
-          -H "Authorization: Bearer $ARGOCD_TOKEN" \
-          -H "Content-Type: application/json" \
-          -k \
-          "https://$ARGOCD_SERVER/api/v1/applications/$APP_NAME/resource/actions?namespace=$NAMESPACE&resourceName=$DEPLOYMENT_NAME&kind=Deployment&group=apps&version=v1" \
-          -d '{"action":"restart"}' \
-          -w "\nHTTP Status: %{http_code}\n"
+        curl -X POST -H "Authorization: Bearer $ARGOCD_TOKEN" -H "Content-Type: application/json" -k "https://$ARGOCD_SERVER/api/v1/applications/$APP_NAME/resource/actions?namespace=$NAMESPACE&resourceName=$DEPLOYMENT_NAME&kind=Deployment&group=apps&version=v1" -d '{"action":"restart"}'
+        
 ---
 
 kind: pipeline
