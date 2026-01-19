@@ -62,7 +62,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: {{ printf "%s-postgresql" .Release.Name }}
-                key: postgresql-password
+                key: postgres-password
           {{- range $key, $value := .Values.env }}
           - name: {{ $key }}
             value: {{ $value | quote }}
