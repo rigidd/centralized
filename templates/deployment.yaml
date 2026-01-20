@@ -72,8 +72,10 @@ spec:
           envFrom:
           - secretRef:
               name: {{ include "centralized.fullname" . }}-app-config
+          {{- if eq .Values.existingSecret.enabled true }}
           - secretRef:
               name: {{ include .Values.existingSecret.name . }}
+          {{- end }}
           readinessProbe:
             httpGet:
               path: /up
