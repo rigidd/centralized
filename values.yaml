@@ -60,7 +60,6 @@ affinity: {}
 existingSecret:
   enabled: false
   name: ""
-  namespace: ""
 
 env:
 

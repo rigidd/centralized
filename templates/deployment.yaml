@@ -47,7 +47,7 @@ spec:
           - name: APP_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ include "centralized.fullname" . }}-app-key
+                name: {{ include .Values.existingSecret.name . }}
                 key: APP_KEY
           {{- end }}
           - name: DB_CONNECTION
