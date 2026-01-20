@@ -74,7 +74,7 @@ spec:
               name: {{ include "centralized.fullname" . }}-app-config
           {{- if eq .Values.existingSecret.enabled true }}
           - secretRef:
-              name: {{ include .Values.existingSecret.name . }}
+              name: "{{ .Values.existingSecret.name }}"
           {{- end }}
           readinessProbe:
             httpGet:
