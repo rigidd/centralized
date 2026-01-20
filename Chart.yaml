@@ -3,7 +3,7 @@ name: centralized
 description: Helm for installing Centralized
 type: application
 version: 0.2.1
-appVersion: "0.1.83"
+appVersion: "0.1.84"
 dependencies:
   - name: postgresql
     version: 18.2.0
