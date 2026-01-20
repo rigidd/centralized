@@ -47,7 +47,7 @@ spec:
           - name: APP_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ include .Values.existingSecret.name . }}
+                name: {{ include "centralized.fullname" . }}-app-key
                 key: APP_KEY
           {{- end }}
           - name: DB_CONNECTION
@@ -72,6 +72,8 @@ spec:
           envFrom:
           - secretRef:
               name: {{ include "centralized.fullname" . }}-app-config
+          - secretRef:
+              name: {{ include .Values.existingSecret.name . }}
           readinessProbe:
             httpGet:
               path: /up
