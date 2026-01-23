@@ -4,6 +4,7 @@ import { Smartphone } from 'lucide-vue-next';
 import { ofetch } from 'ofetch';
 import { useCSRF } from '@/Composables/useCSRF';
 import { WebAuthn } from '@/lib/webauthn';
+import { onMounted } from 'vue';
 
 const {
     mfa_methods,
@@ -41,6 +42,12 @@ const startChallenge = async () => {
 
     emits('verified', response.mfa_verification_token);
 };
+
+onMounted(() => {
+    if (mfa_methods.value.includes('webauthn')) {
+        startChallenge();
+    }
+});
 </script>
 
 <template>

@@ -59,6 +59,11 @@ class AuthorizationController
 
         /** @var ModelsUser $user */
         $user = Auth::user();
+
+        if (($user->mfaEnabled() || config('auth.require_mfa')) && !$request->session()->has('auth.mfa_passed')) {
+            return $this->promptForMFA($request);
+        }
+
         $authRequest->setUser(new User($user->getAuthIdentifier()));
 
         $scopes = $this->parseScopes($authRequest);
@@ -138,6 +143,13 @@ class AuthorizationController
             'status' => session('status'),
             'fromOauth' => true,
             'requestParams' => $request->all(),
+        ]);
+    }
+
+    protected function promptForMFA()
+    {
+        return Inertia::render('Auth/MFAChallenge', [
+            'fromOauth' => true,
         ]);
     }
 }

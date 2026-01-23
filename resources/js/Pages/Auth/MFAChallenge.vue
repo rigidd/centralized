@@ -8,10 +8,18 @@ import { ChevronLeft, ShieldCheck } from 'lucide-vue-next';
 import PinCodeChallenge from '@/Components/MFAChallenge/PinCodeChallenge.vue';
 import WebAuthnChallenge from '@/Components/MFAChallenge/WebAuthnChallenge.vue';
 
+const props = defineProps<{
+    fromOauth?: boolean;
+}>();
+
 const loading = ref<boolean>(false);
 
 const submitChallengeToken = () => {
     loading.value = true;
+
+    if (props.fromOauth) {
+        return router.reload();
+    }
 
     router.visit(route('dashboard'));
 };
@@ -45,7 +53,7 @@ const submitChallengeToken = () => {
 
                     <PinCodeChallenge @verified="submitChallengeToken" />
 
-                    <Link :href="route('logout')" method="post"
+                    <Link v-if="!fromOauth" :href="route('logout')" method="post"
                         class="mt-4 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
                         <ChevronLeft :size="16" class="inline-block" />
                         <a class="text-sm ms-1 ">Back to Login</a>
@@ -53,8 +61,6 @@ const submitChallengeToken = () => {
                 </div>
             </div>
         </div>
-
-        
 
     </GuestLayout>
 </template>
