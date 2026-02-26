@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import Checkbox from "@/Components/Checkbox.vue";
 import DangerButton from "@/Components/DangerButton.vue";
-import DataList from "@/Components/DataList.vue";
-import IconButton from "@/Components/IconButton.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
+import AppSelector from "@/Components/AppSelector.vue";
+import GroupSelector from "@/Components/GroupSelector.vue";
 import { ClientModel } from "@/models/ClientModel";
 import { GroupModel } from "@/models/GroupModel";
 import { useForm } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
 const props = defineProps<{
     user: any;
@@ -19,29 +19,41 @@ const props = defineProps<{
     groups: GroupModel[];
 }>();
 
-const clientsDataList = computed(() =>
-    props.clients.map((client) => client.name)
+// Store selected IDs locally
+const selectedClientIds = ref<(string | number)[]>(
+    props.user.clients.map((client: ClientModel) => client.id)
 );
 
-const groupsDataList = computed(() =>
-    props.groups.map((group) => group.name)
+const selectedGroupIds = ref<(string | number)[]>(
+    props.user.groups.map((group: GroupModel) => group.id)
 );
 
-const userClients = computed(() =>
-    props.user.clients.map((client: ClientModel) => client.name)
-);
+// Convert IDs to names for form submission
+const clientNames = computed(() => {
+    return selectedClientIds.value
+        .map((id) => props.clients.find((c) => c.id === id)?.name)
+        .filter((name): name is string => name !== undefined);
+});
 
-const userGroups = computed(() =>
-    props.user.groups.map((group: GroupModel) => group.name)
-);
+const groupNames = computed(() => {
+    return selectedGroupIds.value
+        .map((id) => props.groups.find((g) => g.id === id)?.name)
+        .filter((name): name is string => name !== undefined);
+});
 
 const form = useForm({
     name: props.user.name,
     email: props.user.email,
     password: "",
     role: props.user.role,
-    clients: userClients.value,
-    groups: userGroups.value,
+    clients: clientNames.value,
+    groups: groupNames.value,
+});
+
+// Watch for changes in selected IDs and update form
+watch([clientNames, groupNames], ([newClientNames, newGroupNames]) => {
+    form.clients = newClientNames;
+    form.groups = newGroupNames;
 });
 
 const deleteUser = () => {
@@ -143,42 +155,11 @@ const role = computed({
             <div>
                 <InputLabel value="Apps" />
 
-                <div
-                    v-for="(client, index) in form.clients"
-                    :key="index"
-                    class="flex items-center gap-4 mt-3"
-                >
-                    <IconButton
-                        v-if="index === form.clients.length - 1"
-                        icon="plus"
-                        class="dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-white"
-                        :size="20"
-                        @click="form.clients.push('')"
+                <div class="mt-3">
+                    <AppSelector
+                        :available-apps="clients"
+                        v-model:selected-app-ids="selectedClientIds"
                     />
-                    <IconButton
-                        v-if="form.clients.length > 0"
-                        icon="minus"
-                        class="dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-white"
-                        :size="20"
-                        @click="form.clients.splice(index, 1)"
-                    />
-                    <DataList
-                        v-model="form.clients[index]"
-                        :options="clientsDataList"
-                        id="client"
-                    />
-                </div>
-
-                <div class="flex items-center gap-2 pt-2" v-if="form.clients.length === 0">
-                    <IconButton
-                        icon="plus"
-                        class="dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-white"
-                        :size="20"
-                        @click="form.clients.push('')"
-                    />
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                        No apps assigned.
-                    </p>
                 </div>
 
                 <InputError class="mt-2" :message="form.errors.clients" />
@@ -187,42 +168,11 @@ const role = computed({
             <div>
                 <InputLabel value="Groups" />
 
-                <div
-                    v-for="(group, index) in form.groups"
-                    :key="index"
-                    class="flex items-center gap-4 mt-3"
-                >
-                    <IconButton
-                        v-if="index === form.groups.length - 1"
-                        icon="plus"
-                        class="dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-white"
-                        :size="20"
-                        @click="form.groups.push('')"
+                <div class="mt-3">
+                    <GroupSelector
+                        :available-groups="groups"
+                        v-model:selected-group-ids="selectedGroupIds"
                     />
-                    <IconButton
-                        v-if="form.groups.length > 0"
-                        icon="minus"
-                        class="dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-white"
-                        :size="20"
-                        @click="form.groups.splice(index, 1)"
-                    />
-                    <DataList
-                        v-model="form.groups[index]"
-                        :options="groupsDataList"
-                        id="group"
-                    />
-                </div>
-
-                <div class="flex items-center gap-2 pt-2" v-if="form.groups.length === 0">
-                    <IconButton
-                        icon="plus"
-                        class="dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-white"
-                        :size="20"
-                        @click="form.groups.push('')"
-                    />
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                        No groups assigned.
-                    </p>
                 </div>
 
                 <InputError class="mt-2" :message="form.errors.groups" />

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ChevronLeft, ShieldCheck } from 'lucide-vue-next';
+import { ChevronLeft, ShieldCheck, X } from 'lucide-vue-next';
 import PinCodeChallenge from '@/Components/MFAChallenge/PinCodeChallenge.vue';
 import WebAuthnChallenge from '@/Components/MFAChallenge/WebAuthnChallenge.vue';
 import Modal from '../Modal.vue';
+import Button from '../ui/button/Button.vue';
 
 const opened = defineModel<boolean>('opened');
 
