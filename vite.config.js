@@ -17,4 +17,22 @@ export default defineConfig({
             },
         }),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('vue') || id.includes('@inertiajs')) {
+                            return 'vue-vendor';
+                        }
+                        if (id.includes('table') || id.includes('tanstack')) {
+                            return 'table-vendor';
+                        }
+                        return 'vendor';
+                    }
+                },
+            },
+        },
+        chunkSizeWarningLimit: 1000,
+    },
 });

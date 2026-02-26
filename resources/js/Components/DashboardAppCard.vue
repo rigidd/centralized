@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-defineProps<{
+const props = defineProps<{
     name: string;
     picture?: string | null;
     redirectUrl?: string | null;
 }>();
 
 const initials = computed(() => {
-    if (!name) {
+    if (!props.name) {
         return "";
     }
 
-    return name
+    return props.name
         .split(" ")
         .filter(Boolean)
         .slice(0, 2)
-        .map((part) => part[0]?.toUpperCase() ?? "")
+        .map((part: string) => part[0]?.toUpperCase() ?? "")
         .join("");
 });
 </script>

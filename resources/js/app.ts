@@ -6,7 +6,8 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, DefineComponent, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import mdiVue from 'mdi-vue/v3'
-import * as mdijs from '@mdi/js'
+// Import uniquement les icônes nécessaires au lieu de tout @mdi/js
+import { mdiPlus, mdiMinus } from '@mdi/js'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Centralized';
 
@@ -25,7 +26,10 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue)
             .use(mdiVue, {
-                icons: mdijs
+                icons: {
+                    plus: mdiPlus,
+                    minus: mdiMinus,
+                }
               })
             .provide('themeVariables', themeVariables)
             .mount(el);
