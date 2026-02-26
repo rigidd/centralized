@@ -1,20 +1,10 @@
 <script setup>
-import AppsMarketplace from "@/Components/AppsMarketplace.vue";
-import Modal from "@/Components/Modal.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Table } from "@dootix-developer/inertiajs-tables-laravel-query-builder";
-import { Head, Link, router } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { Head, Link } from "@inertiajs/vue3";
 
 defineProps(["apps"]);
-
-const marketplace = ref(false);
-
-const appSelected = (app) => {
-    router.get(route("apps.create"), app);
-    marketplace.value = false;
-};
 </script>
 
 <template>
@@ -28,9 +18,6 @@ const appSelected = (app) => {
                 Apps
             </h2>
             <div class="flex flex-1"></div>
-            <PrimaryButton @click="marketplace = true"
-                >Preconfigured Apps</PrimaryButton
-            >
             <Link :href="route('apps.create')">
                 <PrimaryButton :href="route('apps.create')"
                     >Create App</PrimaryButton
@@ -48,7 +35,4 @@ const appSelected = (app) => {
             </div>
         </div>
     </AuthenticatedLayout>
-    <Modal :show="marketplace" @close="marketplace = false">
-        <AppsMarketplace @app-selected="appSelected" />
-    </Modal>
 </template>
