@@ -20,12 +20,13 @@ const form = useForm({
     redirect_urls: [""],
 });
 
-const canRemoveUrl = (index: number) => {
+const canRemoveUrl = (index: string | number) => {
+    const idx = Number(index);
     if (form.redirect_urls.length === 1) return false;
     
     const nonEmptyUrls = form.redirect_urls.filter((url: string) => url && url.trim() !== '');
     
-    if (nonEmptyUrls.length === 1 && form.redirect_urls[index] && form.redirect_urls[index].trim() !== '') {
+    if (nonEmptyUrls.length === 1 && form.redirect_urls[idx] && form.redirect_urls[idx].trim() !== '') {
         return false;
     }
     
