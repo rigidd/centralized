@@ -173,6 +173,27 @@ const showingNavigationDropdown = ref(false);
                         >
                             Dashboard
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            v-if="isAdmin"
+                            :href="route('apps.index')"
+                            :active="route().current('apps.index')"
+                        >
+                            Apps
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            v-if="isAdmin"
+                            :href="route('users.index')"
+                            :active="route().current('users.index')"
+                        >
+                            Users
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            v-if="isAdmin"
+                            :href="route('groups.index')"
+                            :active="route().current('groups.index')"
+                        >
+                            Groups
+                        </ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->
