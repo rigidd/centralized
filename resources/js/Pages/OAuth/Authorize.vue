@@ -13,7 +13,7 @@ const page = usePage();
 const props = defineProps<{
     status?: string;
     client: ClientModel;
-    scopes?: string[];
+    scopes?: {id: string; description: string;}[];
     request?: Record<string, string | number | boolean>;
     authToken: string;
     state: string;
