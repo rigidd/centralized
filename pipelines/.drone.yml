@@ -144,8 +144,8 @@ steps:
         TPL_PATH="templates/manifests/centralized/kustomization.yaml.tpl"
         YAML_PATH="argocd/infrastructure/centralized/kustomization.yaml"
         cd /tmp/k3s-oci
-        yq eval '.helmCharts[0].valuesInline.image[0].tag = "'$VERSION'"' -i $TPL_PATH
-        yq eval '.helmCharts[0].valuesInline.image[0].tag = "'$VERSION'"' -i $YAML_PATH
+        yq eval '.helmCharts[0].valuesInline.image.tag = "'$VERSION'"' -i $TPL_PATH
+        yq eval '.helmCharts[0].valuesInline.image.tag = "'$VERSION'"' -i $YAML_PATH
 
         git add .
         git commit -m "chore: deployed ${DRONE_REPO_NAME} version $VERSION" || echo "No changes to commit"
