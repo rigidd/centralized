@@ -9,6 +9,7 @@
         "asbiin/laravel-webauthn": "^5.4",
         "dootix-developer/inertiajs-tables-laravel-query-builder": "dev-main",
         "inertiajs/inertia-laravel": "^2.0",
+        "jenssegers/agent": "^2.6",
         "jeremy379/laravel-openid-connect": "^3.0",
         "laravel/framework": "^12.0",
         "laravel/octane": "^2.5",

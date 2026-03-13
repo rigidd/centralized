@@ -3,6 +3,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
+import ActiveSessionsPanel from './Partials/ActiveSessionsPanel.vue';
+import ConnectedAppsPanel from './Partials/ConnectedAppsPanel.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import UpdateMFAForm from './Partials/UpdateMFAForm.vue';
 import { WebauthnKey } from '@/models/WebauthnKey';
@@ -12,6 +14,8 @@ defineProps<{
     mustVerifyEmail?: boolean;
     status?: string;
     webauthnKeys: WebauthnKey[];
+    sessions: Array<any>;
+    connectedApps: Array<any>;
 }>();
 
 const highlightMfaCard = ref(false);
@@ -93,6 +97,18 @@ onMounted(() => {
                         : ''"
                 >
                     <UpdateMFAForm :webauthn-keys="webauthnKeys" class="max-w-xl" />
+                </div>
+
+                <div
+                    class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800"
+                >
+                    <ConnectedAppsPanel :connectedApps="connectedApps" class="max-w-xl" />
+                </div>
+
+                <div
+                    class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800"
+                >
+                    <ActiveSessionsPanel :sessions="sessions" class="max-w-xl" />
                 </div>
 
                 <div
