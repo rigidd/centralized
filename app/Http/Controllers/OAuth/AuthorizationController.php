@@ -81,12 +81,13 @@ class AuthorizationController
         $request->session()->put('authRequest', $authRequest);
 
         return Inertia::render('OAuth/Authorize', [
-            'client' => $client,
+            'client' => new \App\Http\Resources\ClientResource($client),
             'user' => $user,
             'scopes' => $scopes,
             'request' => $request,
             'state' => $request->state,
             'authToken' => $authToken,
+            'redirectUri' => current((array) $authRequest->getRedirectUri()),
         ]);
     }
 

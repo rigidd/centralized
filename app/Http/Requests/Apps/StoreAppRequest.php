@@ -13,7 +13,9 @@ class StoreAppRequest extends FormRequest
             'picture' => ['sometimes', 'nullable', 'url'],
             'display' => ['required', 'boolean'],
             'redirect_urls' => ['required', 'array', 'min:1'],
-            'redirect_urls.*' => ['url'],
+            'redirect_urls.*.url' => ['required', 'url'],
+            'redirect_urls.*.alias' => ['nullable', 'string', 'max:255'],
+            'redirect_urls.*.icon' => ['nullable', 'url', 'max:2048'],
         ];
     }
 

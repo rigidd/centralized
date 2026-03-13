@@ -54,12 +54,24 @@ class AppController extends Controller
 
     public function update(Client $client, UpdateAppRequest $request)
     {
+        $urls = collect($request->validated('redirect_urls'))->map(fn ($r) => $r['url'])->toArray();
+
         $client->update([
             'name' => $request->name,
             'picture' => $request->picture,
             'display' => $request->display,
-            'redirect' => implode(',', $request->validated('redirect_urls')),
+            'redirect' => implode(',', $urls),
         ]);
+
+        $client->redirectAliases()->delete();
+
+        foreach ($request->validated('redirect_urls') as $redirect) {
+            $client->redirectAliases()->create([
+                'url' => $redirect['url'],
+                'alias' => $redirect['alias'] ?? null,
+                'icon' => $redirect['icon'] ?? null,
+            ]);
+        }
 
         return Redirect::route('apps.edit', $client->id);
     }
@@ -72,16 +84,27 @@ class AppController extends Controller
     public function store(StoreAppRequest $request)
     {
         $secret = Str::random(64);
+        
+        $urls = collect($request->validated('redirect_urls'))->map(fn ($r) => $r['url'])->toArray();
+
         $client = Client::create([
             'name' => $request->validated('name'),
             'picture' => $request->picture,
-            'redirect' => implode(',', $request->validated('redirect_urls')),
+            'redirect' => implode(',', $urls),
             'personal_access_client' => false,
             'password_client' => false,
             'revoked' => false,
             'secret' => $secret,
             'display' => $request->display,
         ]);
+
+        foreach ($request->validated('redirect_urls') as $redirect) {
+            $client->redirectAliases()->create([
+                'url' => $redirect['url'],
+                'alias' => $redirect['alias'] ?? null,
+                'icon' => $redirect['icon'] ?? null,
+            ]);
+        }
 
         return Inertia::render('Apps/InitHelp', [
             'client' => new ClientResource($client),

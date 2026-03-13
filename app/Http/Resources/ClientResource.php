@@ -13,7 +13,15 @@ class ClientResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'picture' => $this->picture,
-            'redirect_urls' => explode(',', $this->redirect),
+            'redirect_urls' => collect(explode(',', $this->redirect))->map(function ($url) {
+                // Return matching alias or a default object
+                $alias = $this->redirectAliases->where('url', $url)->first();
+                return [
+                    'url' => $url,
+                    'alias' => $alias ? $alias->alias : null,
+                    'icon' => $alias ? $alias->icon : null,
+                ];
+            })->values()->all(),
             'secret' => $this->when($request->method() === 'POST', $this->secret),
             'display' => $this->display,
             'created_at' => $this->created_at,

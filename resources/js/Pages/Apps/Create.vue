@@ -17,16 +17,16 @@ const form = useForm({
     name: "",
     picture: "",
     display: true,
-    redirect_urls: [""],
+    redirect_urls: [{ url: "", alias: "", icon: "" }],
 });
 
 const canRemoveUrl = (index: string | number) => {
     const idx = Number(index);
     if (form.redirect_urls.length === 1) return false;
     
-    const nonEmptyUrls = form.redirect_urls.filter((url: string) => url && url.trim() !== '');
+    const nonEmptyUrls = form.redirect_urls.filter((r: any) => r.url && r.url.trim() !== '');
     
-    if (nonEmptyUrls.length === 1 && form.redirect_urls[idx] && form.redirect_urls[idx].trim() !== '') {
+    if (nonEmptyUrls.length === 1 && form.redirect_urls[idx].url && form.redirect_urls[idx].url.trim() !== '') {
         return false;
     }
     
@@ -43,7 +43,7 @@ onMounted(() => {
     if (query.value.has("picture"))
         form.picture = query.value.get("picture") as string
     if (query.value.has("redirect_urls"))
-        form.redirect_urls = (query.value.get("redirect_urls") as string).split(",")
+        form.redirect_urls = (query.value.get("redirect_urls") as string).split(",").map(url => ({ url, alias: "", icon: "" }))
 })
 </script>
 
@@ -123,22 +123,55 @@ onMounted(() => {
 
                                 <div class="mt-3 space-y-3">
                                     <div
-                                        v-for="(url, index) in form.redirect_urls"
+                                        v-for="(redirect, index) in form.redirect_urls"
                                         :key="index"
-                                        class="group relative flex items-center gap-3 p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+                                        class="group relative flex flex-col gap-3 p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
                                     >
-                                        <div class="flex-1">
-                                            <TextInput
-                                                type="url"
-                                                class="w-full"
-                                                v-model="form.redirect_urls[index]"
-                                                placeholder="https://example.com/callback"
-                                            />
-                                            <InputError
-                                                class="mt-1"
-                                                :message="((form.errors) as Record<string, string>)[`redirect_urls.${index}`]"
-                                            />
-                                        </div>
+                                        <div class="flex items-start gap-3 w-full">
+                                            <div class="flex-1 space-y-3">
+                                                <div>
+                                                    <InputLabel :value="'URL '" class="text-xs" />
+                                                    <TextInput
+                                                        type="url"
+                                                        class="w-full"
+                                                        v-model="redirect.url"
+                                                        required
+                                                        placeholder="https://example.com/callback"
+                                                    />
+                                                    <InputError
+                                                        class="mt-1"
+                                                        :message="((form.errors) as Record<string, string>)[`redirect_urls.${index}.url`]"
+                                                    />
+                                                </div>
+                                                <div class="grid grid-cols-2 gap-3">
+                                                    <div>
+                                                        <InputLabel :value="'Alias (Optional)'" class="text-xs" />
+                                                        <TextInput
+                                                            type="text"
+                                                            class="w-full"
+                                                            v-model="redirect.alias"
+                                                            placeholder="My Custom App"
+                                                        />
+                                                        <InputError
+                                                            class="mt-1"
+                                                            :message="((form.errors) as Record<string, string>)[`redirect_urls.${index}.alias`]"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <InputLabel :value="'Icon URL (Optional)'" class="text-xs" />
+                                                        <TextInput
+                                                            type="url"
+                                                            class="w-full"
+                                                            v-model="redirect.icon"
+                                                            placeholder="https://example.com/icon.png"
+                                                        />
+                                                        <InputError
+                                                            class="mt-1"
+                                                            :message="((form.errors) as Record<string, string>)[`redirect_urls.${index}.icon`]"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
                                         <button
                                             type="button"
                                             :disabled="!canRemoveUrl(index)"
@@ -154,12 +187,13 @@ onMounted(() => {
                                             <Minus :size="20" />
                                         </button>
                                     </div>
+                                    </div>
                                 </div>
 
                                 <button
                                     type="button"
                                     class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                                    @click="form.redirect_urls.push('')"
+                                    @click="form.redirect_urls.push({ url: '', alias: '', icon: '' })"
                                 >
                                     <Plus :size="16" />
                                     Add Redirect URL

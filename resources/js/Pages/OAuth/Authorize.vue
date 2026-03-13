@@ -4,28 +4,41 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import Spinner from "@/Components/Spinner.vue";
 import { ClientModel } from "@/models/ClientModel";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 
 const page = usePage();
 
-defineProps<{
+const props = defineProps<{
     status?: string;
     client: ClientModel;
     scopes?: string[];
     request?: Record<string, string | number | boolean>;
     authToken: string;
     state: string;
+    redirectUri: string;
 }>();
 
 const form = useForm({});
 
 const loading = ref<boolean>(false);
+
+const aliasInfo = computed(() => {
+    return props.client.redirect_urls?.find((r) => r.url === props.redirectUri);
+});
+
+const displayName = computed(() => {
+    return aliasInfo.value?.alias || props.client.name;
+});
+
+const displayIcon = computed(() => {
+    return aliasInfo.value?.icon || props.client.picture;
+});
 </script>
 
 <template>
     <GuestLayout>
-        <Head :title="client.name" />
+        <Head :title="displayName" />
 
         <div v-if="loading" class="flex flex-col items-center gap-5">
             <Spinner class="dark:text-white" />
@@ -39,8 +52,8 @@ const loading = ref<boolean>(false);
 
             <div>
                 <div class="flex flex-col items-center gap-4">
-                    <img v-if="client.picture" :src="client.picture" :alt="`${client.name} picture`" class="h-20 w-20" />
-                    <h1 class="dark:text-white text-center font-bold">{{ client.name }}</h1>
+                    <img v-if="displayIcon" :src="displayIcon" :alt="`${displayName} picture`" class="h-20 w-20" />
+                    <h1 class="dark:text-white text-center font-bold">{{ displayName }}</h1>
                 </div>
 
                 <div class="py-12">

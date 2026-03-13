@@ -144,14 +144,14 @@ defineProps<{
 
                                 <div
                                     v-for="(
-                                        redirect_urls, index
+                                        redirect, index
                                     ) in client.redirect_urls"
                                     :key="index"
                                 >
                                     <TextLink
                                         type="text"
                                         class="mt-1 block w-full"
-                                        v-model="client.redirect_urls[index]"
+                                        v-model="client.redirect_urls[index].url"
                                     />
                                 </div>
                             </div>

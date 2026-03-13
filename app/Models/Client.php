@@ -21,4 +21,9 @@ class Client extends PassportClient
     {
         return $query->where('display', true);
     }
+
+    public function redirectAliases()
+    {
+        return $this->hasMany(ClientRedirectAlias::class, 'client_id', 'id');
+    }
 }

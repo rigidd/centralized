@@ -25,5 +25,9 @@ class DatabaseSeeder extends Seeder
 
             echo "Admin user created with email: $seed@email.com and password: $password\n";
         }
+
+        $this->call([
+            ClientRedirectAliasesSeeder::class ,
+        ]);
     }
 }

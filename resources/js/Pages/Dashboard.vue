@@ -45,7 +45,7 @@ const clients = computed(() => {
                                     :key="client.id ?? client.name"
                                     :name="client.name"
                                     :picture="client.picture"
-                                    :redirect-url="client.redirect_urls[0]"
+                                    :redirect-url="client.redirect_urls[0]?.url"
                                 />
                             </div>
                             <div
