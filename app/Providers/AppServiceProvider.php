@@ -3,6 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Client;
+use App\Models\User;
+use App\Observers\UserObserver;
+use App\Listeners\UserEventSubscriber;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -35,5 +39,8 @@ class AppServiceProvider extends ServiceProvider
         JsonResource::withoutWrapping();
         Passport::useClientModel(Client::class);
         Passport::tokensCan(config('openid.passport.tokens_can'));
+
+        User::observe(UserObserver::class);
+        Event::subscribe(UserEventSubscriber::class);
     }
 }

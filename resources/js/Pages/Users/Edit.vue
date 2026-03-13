@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import UpdateGeneralInformationForm from "./Partials/UpdateGeneralInformationForm.vue";
+import UserEventsTimeline from "@/Components/UserEventsTimeline.vue";
 import { Head } from "@inertiajs/vue3";
 
 defineProps(["user", "roleEditable", "clients", "groups"]);
@@ -20,16 +21,20 @@ defineProps(["user", "roleEditable", "clients", "groups"]);
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                <div
-                    class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800"
-                >
-                    <UpdateGeneralInformationForm
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800 lg:col-span-2">
+                        <UpdateGeneralInformationForm
                         :user="user"
                         :role-editable="roleEditable"
-                        class="max-w-xl"
                         :clients="clients"
                         :groups="groups"
-                    />
+                        />
+                    </div>
+
+                    <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800 lg:col-span-1">
+                        <UserEventsTimeline :events="user.events || []" />
+                    </div>
                 </div>
             </div>
         </div>

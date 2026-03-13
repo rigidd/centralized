@@ -54,7 +54,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         return Inertia::render('Users/Edit', [
-            'user' => new UserResource($user->load('clients', 'groups')),
+            'user' => new UserResource($user->load('clients', 'groups', 'events')),
             'roleEditable' => Auth::user()->id !== $user->id,
             'clients' => Client::all(),
             'groups' => Group::all(),

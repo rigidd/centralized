@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'clients' => ClientResource::collection($this->whenLoaded('clients')),
             'groups' => GroupResource::collection($this->whenLoaded('groups')),
             'has_webauthn_enabled' => $this->hasWebauthnEnabled(),
+            'events' => $this->whenLoaded('events'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

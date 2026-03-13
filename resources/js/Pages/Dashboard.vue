@@ -5,6 +5,7 @@ import DashboardHero from "@/Components/DashboardHero.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { ClientModel } from "@/models/ClientModel";
 import { Head, Link, usePage } from "@inertiajs/vue3";
+import UserEventsTimeline from "@/Components/UserEventsTimeline.vue";
 import { computed } from "vue";
 
 const user = usePage().props.auth.user;
@@ -67,11 +68,10 @@ const clients = computed(() => {
                             title="Recent activity"
                             description="A quick overview of important events in your account."
                         >
-                            <p
-                                class="text-sm text-gray-500 dark:text-gray-400"
-                            >
-                                A detailed history of sign-ins and sensitive actions will be available here soon.
-                            </p>
+                            <UserEventsTimeline 
+                                :events="user.events || []" 
+                                hide-header 
+                            />
                         </DashboardCard>
                     </div>
 

@@ -9,4 +9,5 @@ export interface UserModel extends IdAndTimestamp {
   clients: ClientModel[];
   has_webauthn_enabled: boolean;
   role: string;
+  events?: any[];
 }
