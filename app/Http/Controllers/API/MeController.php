@@ -10,6 +10,8 @@ class MeController extends Controller
     public function __invoke(Request $request)
     {
         $user = $request->user();
-        return response()->json($user->load('groups'));
+        $user->load('groups');
+        $user->setAttribute('sub', strval($user->id));
+        return response()->json($user);
     }
 }

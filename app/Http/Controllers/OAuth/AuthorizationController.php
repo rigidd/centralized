@@ -31,22 +31,24 @@ class AuthorizationController
     public function __construct(
         protected AuthorizationServer $server,
         protected ClientRepository $clients,
-        ) {}
+        )
+    {
+    }
 
     public function authorize(
         ServerRequestInterface $psrRequest,
         Request $request,
-    )
+        )
     {
         $authRequest = $this->withErrorHandling(
-            fn (): AuthorizationRequestInterface => $this->server->validateAuthorizationRequest($psrRequest),
+        fn(): AuthorizationRequestInterface => $this->server->validateAuthorizationRequest($psrRequest),
             ($psrRequest->getQueryParams()['response_type'] ?? null) === 'token'
         );
 
         if (Auth::guest()) {
             return $request->get('prompt') === 'none'
-                    ? $this->denyRequest($authRequest)
-                    : $this->promptForLogin($request);
+                ? $this->denyRequest($authRequest)
+                : $this->promptForLogin($request);
         }
 
         if ($request->get('prompt') === 'login') {
@@ -87,7 +89,8 @@ class AuthorizationController
             'request' => $request,
             'state' => $request->state,
             'authToken' => $authToken,
-            'redirectUri' => current((array) $authRequest->getRedirectUri()),
+            'redirectUri' => current((array)$authRequest->getRedirectUri()),
+            'nonce' => $request->nonce,
         ]);
     }
 
@@ -95,8 +98,8 @@ class AuthorizationController
     {
         return Passport::scopesFor(
             collect($authRequest->getScopes())->map(
-                fn (ScopeEntityInterface $scope): string => $scope->getIdentifier()
-            )->unique()->all()
+        fn(ScopeEntityInterface $scope): string => $scope->getIdentifier()
+        )->unique()->all()
         );
     }
 
@@ -104,8 +107,8 @@ class AuthorizationController
     {
         $authRequest->setAuthorizationApproved(true);
 
-        return $this->withErrorHandling(fn () => $this->convertResponse(
-            $this->server->completeAuthorizationRequest($authRequest, $psrResponse)
+        return $this->withErrorHandling(fn() => $this->convertResponse(
+        $this->server->completeAuthorizationRequest($authRequest, $psrResponse)
         ), $authRequest->getGrantTypeId() === 'implicit');
     }
 
@@ -114,12 +117,12 @@ class AuthorizationController
         if (is_null($user)) {
             $uri = $authRequest->getRedirectUri()
                 ?? (is_array($authRequest->getClient()->getRedirectUri())
-                    ? $authRequest->getClient()->getRedirectUri()[0]
-                    : $authRequest->getClient()->getRedirectUri());
+                ? $authRequest->getClient()->getRedirectUri()[0]
+                : $authRequest->getClient()->getRedirectUri());
 
             $separator = $authRequest->getGrantTypeId() === 'implicit' ? '#' : '?';
 
-            $uri = $uri.(str_contains($uri, $separator) ? '&' : $separator).'state='.$authRequest->getState();
+            $uri = $uri . (str_contains($uri, $separator) ? '&' : $separator) . 'state=' . $authRequest->getState();
 
             return $this->withErrorHandling(function () use ($uri) {
                 throw OAuthServerException::accessDenied('Unauthenticated', $uri);

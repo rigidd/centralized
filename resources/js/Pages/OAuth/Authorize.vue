@@ -13,11 +13,12 @@ const page = usePage();
 const props = defineProps<{
     status?: string;
     client: ClientModel;
-    scopes?: {id: string; description: string;}[];
+    scopes?: { id: string; description: string; }[];
     request?: Record<string, string | number | boolean>;
     authToken: string;
     state: string;
     redirectUri: string;
+    nonce?: string;
 }>();
 
 const loading = ref<boolean>(false);
@@ -56,10 +57,17 @@ const displayScopes = computed(() => {
         icon: scopeIcons[scope.id] ?? Grid,
     }));
 });
+
+const authorizeRoute = computed(() => {
+    if (props.nonce)
+        return route('passport.authorizations.approve', { nonce: props.nonce })
+    return route('passport.authorizations.approve')
+})
 </script>
 
 <template>
     <GuestLayout>
+
         <Head :title="`Authorize ${displayName}`" />
 
         <div v-if="loading" class="flex flex-col items-center gap-5 py-6">
@@ -71,22 +79,17 @@ const displayScopes = computed(() => {
 
             <!-- App Icon & Name -->
             <div class="flex flex-col items-center gap-2 pb-5">
-                <img
-                    v-if="displayIcon"
-                    :src="displayIcon"
-                    :alt="`${displayName} icon`"
-                    class="h-16 w-16 rounded-2xl object-cover shadow-sm border border-gray-200 dark:border-gray-600"
-                />
-                <div
-                    v-else
-                    class="h-16 w-16 rounded-2xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xl font-bold text-gray-500 dark:text-gray-300"
-                >
+                <img v-if="displayIcon" :src="displayIcon" :alt="`${displayName} icon`"
+                    class="h-16 w-16 rounded-2xl object-contain shadow-sm border border-gray-200 dark:border-gray-600" />
+                <div v-else
+                    class="h-16 w-16 rounded-2xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xl font-bold text-gray-500 dark:text-gray-300">
                     {{ displayName.charAt(0).toUpperCase() }}
                 </div>
 
                 <div class="text-center">
                     <h1 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ displayName }}</h1>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ client.name }}</p>
+                    <p v-if="displayName !== client.name" class="text-xs text-gray-500 dark:text-gray-400">{{
+                        client.name }}</p>
                 </div>
             </div>
 
@@ -100,15 +103,9 @@ const displayScopes = computed(() => {
 
                 <!-- Scopes list -->
                 <ul v-if="displayScopes.length" class="space-y-3">
-                    <li
-                        v-for="scope in displayScopes"
-                        :key="scope.label"
-                        class="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300"
-                    >
-                        <component
-                            :is="scope.icon"
-                            class="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500"
-                        />
+                    <li v-for="scope in displayScopes" :key="scope.label"
+                        class="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
+                        <component :is="scope.icon" class="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500" />
                         {{ scope.label }}
                     </li>
                 </ul>
@@ -118,11 +115,10 @@ const displayScopes = computed(() => {
 
             <!-- Signed-in user identity chip -->
             <div class="py-4 flex justify-center w-full">
-                <div
-                    v-if="currentUser"
-                    class="inline-flex items-center gap-2 rounded-full bg-gray-100 dark:bg-gray-700 px-3 py-1.5 text-xs text-gray-600 dark:text-gray-300"
-                >
-                    <span class="h-5 w-5 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-[10px] font-bold text-gray-700 dark:text-gray-200 uppercase">
+                <div v-if="currentUser"
+                    class="inline-flex items-center gap-2 rounded-full bg-gray-100 dark:bg-gray-700 px-3 py-1.5 text-xs text-gray-600 dark:text-gray-300">
+                    <span
+                        class="h-5 w-5 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-[10px] font-bold text-gray-700 dark:text-gray-200 uppercase">
                         {{ currentUser.name?.charAt(0) }}
                     </span>
                     {{ currentUser.email }}
@@ -131,11 +127,7 @@ const displayScopes = computed(() => {
 
             <!-- Action buttons -->
             <div class="flex w-full items-center justify-between gap-3">
-                <form
-                    method="POST"
-                    :action="route('passport.authorizations.deny')"
-                    class="flex-1"
-                >
+                <form method="POST" :action="route('passport.authorizations.deny')" class="flex-1">
                     <input type="hidden" name="_token" :value="page.props.auth.csrf_token" autocomplete="off" />
                     <input type="hidden" name="_method" value="DELETE" />
                     <input type="hidden" name="state" :value="state" />
@@ -146,11 +138,7 @@ const displayScopes = computed(() => {
                     </SecondaryButton>
                 </form>
 
-                <form
-                    method="POST"
-                    :action="route('passport.authorizations.approve')"
-                    class="flex-1"
-                >
+                <form method="POST" :action="authorizeRoute" class="flex-1">
                     <input type="hidden" name="_token" :value="page.props.auth.csrf_token" autocomplete="off" />
                     <input type="hidden" name="state" :value="state" />
                     <input type="hidden" name="client_id" :value="client.id" />
