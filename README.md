@@ -1,66 +1,86 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Centralized
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Centralized is a lightweight, self-hosted Identity and Single Sign-On (SSO) provider built with Laravel 12, Inertia.js, Vue 3, and FrankenPHP.
 
-## About Laravel
+It provides centralized OAuth2 and OpenID Connect (OIDC) authentication across multiple client applications, complete with hardware-backed MFA (WebAuthn / Passkeys), user sessions audit logs, and granular access management.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **OAuth 2.0 & OpenID Connect**: Turn the platform into an identity provider for internal tools, third-party apps, or custom clients via Laravel Passport and OIDC extensions.
+- **Client & Redirect Management**: Configure OAuth clients, allowed redirect URIs, and custom redirect aliases per application.
+- **Hardware MFA & Passkeys**: Integrated WebAuthn support (FIDO2 / Security keys / Biometrics) alongside standard authentication.
+- **Session & Event Auditing**: Track active user sessions, login history, and security events with remote session revocation.
+- **Modern Inertia Stack**: Vue 3 with Tailwind CSS front-end served directly from Laravel via Inertia.js.
+- **Cloud Native Deployment**: Pre-configured for FrankenPHP / Octane with Dockerfiles, Helm charts, and CI pipelines for Kubernetes and ArgoCD.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Tech Stack
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Backend**: PHP 8.4+, Laravel 12, Laravel Octane (FrankenPHP)
+- **Frontend**: Vue 3, Inertia.js, Tailwind CSS, TypeScript
+- **Auth & Protocols**: Laravel Passport, OpenID Connect (`laravel-openid-connect`), WebAuthn (`laravel-webauthn`)
+- **Database / Cache**: PostgreSQL, Redis
+- **DevOps**: Docker, Helm, Drone CI / ArgoCD
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Getting Started
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Local Development
 
-### Premium Partners
+1. **Clone repository and install dependencies**:
+   ```bash
+   git clone https://github.com/rigidd/centralized.git
+   cd centralized
+   composer install
+   npm install
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+2. **Environment configuration**:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-## Contributing
+3. **Database setup**:
+   Configure database credentials in `.env`, then run migrations and OAuth key generation:
+   ```bash
+   php artisan migrate
+   php artisan passport:keys
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+4. **Run dev servers**:
+   ```bash
+   npm run dev
+   php artisan serve
+   ```
 
-## Code of Conduct
+### Running with Docker
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+A Docker compose setup is included for quick local spin-up:
 
-## Security Vulnerabilities
+```bash
+docker compose up -d
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
+
+## Kubernetes & Deployment
+
+Helm chart definitions are located in `templates/` and configured via [values.yaml](values.yaml).
+
+- Chart configuration supports mounting external Kubernetes secrets (`existingSecret.enabled=true`) for production secrets (`APP_KEY`, database credentials, OAuth keys).
+- Health probes are configured against `/up`.
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0).
+
+- **Non-Commercial Use**: You are free to inspect, evaluate, run, and modify the software for personal, educational, or internal non-commercial purposes.
+- **Commercial Use**: Any use involving commercial advantage or monetary compensation requires explicit prior written permission.
+- **Attribution**: Copyright (c) 2024-present Nicolas Jacquemin. See [LICENSE](LICENSE) for details.
